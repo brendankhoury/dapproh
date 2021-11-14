@@ -29,7 +29,7 @@ class _StartPageState extends State<StartPage> {
                 ),
                 OutlinedButton(
                   onPressed: () {
-                    Provider.of<NavigationController>(context, listen: false).changeScreen('/create');
+                    Provider.of<NavigationController>(context, listen: false).changeScreen('/start/create');
                   },
                   child: const Text("Create Account"),
                 ),

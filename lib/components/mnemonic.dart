@@ -1,36 +1,45 @@
-import 'package:dapproh/secret.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class MnemonicDisplay extends StatelessWidget {
   const MnemonicDisplay({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: TEST_MNEMONIC
-              .split(" ")
-              .sublist(0, 6)
-              .map((e) => Text(
-                    e,
-                  ))
-              .toList(),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: TEST_MNEMONIC
-              .split(" ")
-              .sublist(6)
-              .map((e) => Text(
-                    e,
-                  ))
-              .toList(),
-        ),
-      ],
-    ));
+    return ValueListenableBuilder(
+        valueListenable: Hive.box("mnemonic").listenable(),
+        builder: (context, Box box, widget) {
+          return Center(
+              child: Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: box
+                            .get("mnemonic")
+                            .split(" ")
+                            .sublist(0, 6)
+                            .map<Widget>((e) => Text(
+                                  e,
+                                ))
+                            .toList(),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: box
+                            .get("mnemonic")
+                            .split(" ")
+                            .sublist(6)
+                            .map<Widget>((e) => Text(
+                                  e,
+                                ))
+                            .toList(),
+                      ),
+                    ],
+                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 20)));
+        });
   }
 }
