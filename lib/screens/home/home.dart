@@ -15,7 +15,11 @@ class HomePage extends StatelessWidget {
       controller: _controller,
       backgroundColor: Theme.of(context).primaryColor,
       // navBarStyle: NavBarStyle.style2,
-      screens: const [FeedPage(), ProfilePage(), ProfilePage()],
+      screens: const [
+        FeedPage(),
+        // ProfilePage(),
+        ProfilePage()
+      ],
       items: [
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.home),
@@ -23,12 +27,12 @@ class HomePage extends StatelessWidget {
           activeColorPrimary: CupertinoColors.white,
           inactiveColorPrimary: CupertinoColors.systemGrey,
         ),
-        PersistentBottomNavBarItem(
-          icon: const Icon(CupertinoIcons.add),
-          title: ("Post"),
-          activeColorPrimary: CupertinoColors.white,
-          inactiveColorPrimary: CupertinoColors.systemGrey,
-        ),
+        // PersistentBottomNavBarItem(
+        //   icon: const Icon(CupertinoIcons.add),
+        //   title: ("Post"),
+        //   activeColorPrimary: CupertinoColors.white,
+        //   inactiveColorPrimary: CupertinoColors.systemGrey,
+        // ),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),
           title: ("Profile"),

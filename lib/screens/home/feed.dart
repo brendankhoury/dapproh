@@ -19,24 +19,21 @@ class FeedPage extends StatelessWidget {
                       backgroundImage: NetworkImage("https://picsum.photos/100"),
                     ),
                     backgroundColor: CupertinoColors.white,
-                    radius: 23,
+                    radius: 22,
                   ),
                   margin: EdgeInsets.only(right: 5)),
               Text("Poster Name", textScaleFactor: 1.5)
             ]),
             margin: EdgeInsets.only(left: 10, bottom: 5),
           ),
-          // Container(
-          //   height: 5,
-          // ),
           Image(
-            image: NetworkImage("https://picsum.photos/500"),
+            image: NetworkImage("https://picsum.photos/700"),
             fit: BoxFit.cover,
           ),
           Container(
             child: Text(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"),
-            margin: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           ),
           Divider(
             color: CupertinoColors.white,
