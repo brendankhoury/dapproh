@@ -15,12 +15,12 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage> {
   void regenerateMnemonic() {
-    Hive.box("mnemonic").put("mnemonic", bip39.generateMnemonic());
+    Hive.box("configuration").put("mnemonic", bip39.generateMnemonic());
   }
 
   @override
   Widget build(BuildContext context) {
-    if (Hive.box("mnemonic").get("mnemonic") == null) {
+    if (Hive.box("configuration").get("mnemonic") == null) {
       regenerateMnemonic();
     }
 

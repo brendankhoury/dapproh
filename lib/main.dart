@@ -1,4 +1,5 @@
 import 'package:dapproh/controllers/navigation.dart';
+import 'package:dapproh/screens/home/home.dart';
 import 'package:dapproh/screens/onboarding/confirm.dart';
 import 'package:dapproh/screens/onboarding/create.dart';
 import 'package:dapproh/screens/onboarding/restore.dart';
@@ -12,8 +13,8 @@ void main() async {
   debugPrint("Starting app");
 
   await Hive.initFlutter();
-  await Hive.openBox("mnemonic");
-  // testSky();
+  await Hive.openBox("configuration");
+
   runApp(MultiProvider(providers: [
     ListenableProvider<NavigationController>(
       create: (_) => NavigationController(),
@@ -32,7 +33,6 @@ class Dapproh extends StatelessWidget {
           pages: getPages(context),
           onPopPage: (route, result) {
             bool popStatus = route.didPop(result);
-            // TODO: Invalid implementation
             if (popStatus) {
               NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
               navigation.changeScreen(navigation.screenName.substring(0, navigation.screenName.lastIndexOf('/')));
@@ -62,27 +62,9 @@ List<Page> getPages(context) {
       case 'restore':
         pages.add(const MaterialPage(child: RestorePage()));
         break;
+      case 'home':
+        pages.add(const MaterialPage(child: HomePage()));
     }
   });
-
-  // switch (navigation.screenName) {
-  //   case '/start':
-  //     pages.add(const MaterialPage(child: StartPage()));
-  //     break;
-  //   case '/create':
-  //     pages.add(const MaterialPage(child: StartPage()));
-  //     pages.add(const MaterialPage(child: CreatePage()));
-  //     break;
-
-  //   case '/confirm':
-  //     pages.add(const MaterialPage(child: ConfirmSignupPage()));
-  //     pages.add(const MaterialPage(child: StartPage()));
-  //     break;
-  //   case '/restore':
-  //     pages.add(const MaterialPage(child: StartPage()));
-  //     pages.add(const MaterialPage(child: RestorePage()));
-  //     break;
-  // }
-
   return pages;
 }

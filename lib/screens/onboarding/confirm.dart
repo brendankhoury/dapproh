@@ -18,7 +18,8 @@ class ConfirmSignupPage extends StatelessWidget {
                   '\nIf someone else gains access to the mnemonic, they will have full access to the account.'),
               TextButton(
                   onPressed: () {
-                    debugPrint("Confirm not implemented");
+                    Provider.of<NavigationController>(context, listen: false).changeScreen('/home');
+                    debugPrint("Still need to implement the confirmed portion of the hive box");
                   },
                   child: const Text("Confirm")),
               OutlinedButton(

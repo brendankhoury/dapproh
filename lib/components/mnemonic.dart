@@ -8,7 +8,7 @@ class MnemonicDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-        valueListenable: Hive.box("mnemonic").listenable(),
+        valueListenable: Hive.box("configuration").listenable(),
         builder: (context, Box box, widget) {
           return Center(
               child: Container(
