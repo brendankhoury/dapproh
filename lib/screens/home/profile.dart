@@ -34,15 +34,15 @@ class ProfilePage extends StatelessWidget {
           children: [
             OutlinedButton(
                 onPressed: () {
-                  debugPrint("Copy invite code not yet implemented");
+                  debugPrint("Copy friend code not yet implemented");
                 },
                 child: const Text(
-                  "Copy invite code",
+                  "Copy friend code",
                 ),
                 style: OutlinedButton.styleFrom(primary: CupertinoColors.white)),
             OutlinedButton(
                 onPressed: () {
-                  debugPrint("Share invite code not yet implemented");
+                  debugPrint("Share friend code not yet implemented");
                 },
                 child: const Icon(CupertinoIcons.share),
                 style: OutlinedButton.styleFrom(primary: CupertinoColors.white))
@@ -50,13 +50,23 @@ class ProfilePage extends StatelessWidget {
         ),
         Center(
           child: ElevatedButton(
-            child: Text("Reset Invite Code"),
+            child: Text("Reset friend code"),
             onPressed: () {
-              debugPrint("Reset invite code not yet implemented");
+              debugPrint("Reset friend code not yet implemented");
             },
             style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
           ),
-        )
+        ),
+        Center(
+            child: TextButton(
+          onPressed: () {
+            debugPrint("How do friend codes work not yet implemented");
+          },
+          child: const Text(
+            "What are friend codes?",
+          ),
+          style: TextButton.styleFrom(primary: CupertinoColors.white),
+        )),
       ],
       crossAxisAlignment: CrossAxisAlignment.start,
     )));

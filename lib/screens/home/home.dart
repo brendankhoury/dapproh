@@ -1,8 +1,10 @@
+import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/screens/home/feed.dart';
 import 'package:dapproh/screens/home/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -14,12 +16,12 @@ class HomePage extends StatelessWidget {
       context,
       controller: _controller,
       backgroundColor: Theme.of(context).primaryColor,
-      // navBarStyle: NavBarStyle.style2,
-      screens: const [
-        FeedPage(),
-        // ProfilePage(),
-        ProfilePage()
-      ],
+
+      navBarStyle: NavBarStyle.style18,
+      // navBarStyle: NavBarStyle.style14,
+      // navBarStyle: NavBarStyle.style13,
+      // navBarStyle: NavBarStyle.style9,
+      screens: const [FeedPage(), Text("This should not be shown Lol"), ProfilePage()],
       items: [
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.home),
@@ -27,12 +29,14 @@ class HomePage extends StatelessWidget {
           activeColorPrimary: CupertinoColors.white,
           inactiveColorPrimary: CupertinoColors.systemGrey,
         ),
-        // PersistentBottomNavBarItem(
-        //   icon: const Icon(CupertinoIcons.add),
-        //   title: ("Post"),
-        //   activeColorPrimary: CupertinoColors.white,
-        //   inactiveColorPrimary: CupertinoColors.systemGrey,
-        // ),
+        PersistentBottomNavBarItem(
+            icon: const Icon(CupertinoIcons.add),
+            title: ("Post"),
+            activeColorPrimary: CupertinoColors.white,
+            inactiveColorPrimary: CupertinoColors.systemGrey,
+            onPressed: (pressedContext) {
+              Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
+            }),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),
           title: ("Profile"),

@@ -1,5 +1,7 @@
 import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/screens/home/home.dart';
+import 'package:dapproh/screens/home/post_camera.dart';
+import 'package:dapproh/screens/home/post_confirmation.dart';
 import 'package:dapproh/screens/onboarding/confirm.dart';
 import 'package:dapproh/screens/onboarding/create.dart';
 import 'package:dapproh/screens/onboarding/restore.dart';
@@ -64,6 +66,17 @@ List<Page> getPages(context) {
         break;
       case 'home':
         pages.add(const MaterialPage(child: HomePage()));
+        break;
+      case 'post_camera':
+        pages.add(const MaterialPage(child: PostCameraPage()));
+        break;
+      case 'post_confirm':
+        pages.add(const MaterialPage(child: PostConfirmationPage()));
+        break;
+      case '':
+        break;
+      default:
+        throw Exception("No page found for ${element.length}");
     }
   });
   return pages;
