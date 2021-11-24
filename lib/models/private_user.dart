@@ -1,14 +1,17 @@
 import 'package:dapproh/models/followed_user.dart';
 import 'package:dapproh/models/post.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'private_user.g.dart';
+
+@JsonSerializable()
 class PrivateUser {
   // map<skynetpublickey, user>. prevents the same user from being added twice
   Map<String, FollowedUser> following;
 
   List<Post> postArchive;
-  String privateEncryptionKey; //For the public user;
-  String publicEncryptionKey; //For the public user;
-  PrivateUser(this.following, this.postArchive, this.privateEncryptionKey, this.publicEncryptionKey);
+  String encryptionKey; //For the public user;
+  PrivateUser(this.following, this.postArchive, this.encryptionKey);
 
   /*
     @effects following, inserts user into following if the public key is not already in the map
@@ -39,4 +42,11 @@ class PrivateUser {
   void addPost(Post post) {
     postArchive.add(post);
   }
+
+  factory PrivateUser.fromJson(Map<String, dynamic> json) => _$PrivateUserFromJson(json);
+  // : following = jsonDecode(json['following']),
+  //   postArchive = jsonDecode(json['postArchive']),
+  //   encryptionKey = json['encryptionKey'];
+
+  Map<String, dynamic> toJson() => _$PrivateUserToJson(this); // {'following': following, 'postArchive': postArchive, 'encryptionKey': encryptionKey};
 }

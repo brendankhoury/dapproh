@@ -1,3 +1,4 @@
+export 'feed.dart';
 export 'followed_user.dart';
 export 'post.dart';
 export 'private_user.dart';
