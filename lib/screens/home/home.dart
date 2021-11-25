@@ -1,13 +1,31 @@
+import 'package:bip39/bip39.dart';
 import 'package:dapproh/controllers/navigation.dart';
+import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/screens/home/feed.dart';
 import 'package:dapproh/screens/home/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:skynet/skynet.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    debugPrint("_HomePageState.initState called");
+    UserDataController userData = Provider.of<UserDataController>(context, listen: false);
+    userData.initUser();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +53,10 @@ class HomePage extends StatelessWidget {
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) {
-              Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
+              String newMnemonic = generateMnemonic();
+              debugPrint("Resetting Mnemonic $newMnemonic");
+              Hive.box("configuration").put("mnemonic", newMnemonic);
+              // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),

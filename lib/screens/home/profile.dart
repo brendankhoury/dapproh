@@ -1,5 +1,7 @@
+import 'package:dapproh/util/public_feed_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -7,8 +9,8 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Expanded(
-            child: Column(
+        // child: Expanded(
+        child: Column(
       children: [
         Row(
           children: [
@@ -21,7 +23,7 @@ class ProfilePage extends StatelessWidget {
                   backgroundImage: NetworkImage("https://picsum.photos/100"),
                 ),
               ),
-              margin: EdgeInsets.all(10),
+              margin: const EdgeInsets.all(10),
             ),
             const Text(
               "Profile Name",
@@ -34,7 +36,7 @@ class ProfilePage extends StatelessWidget {
           children: [
             OutlinedButton(
                 onPressed: () {
-                  debugPrint("Copy friend code not yet implemented");
+                  Clipboard.setData(ClipboardData(text: PublicFeedUtil.getFriendCodeFromBox()));
                 },
                 child: const Text(
                   "Copy friend code",
@@ -50,11 +52,23 @@ class ProfilePage extends StatelessWidget {
         ),
         Center(
           child: ElevatedButton(
-            child: Text("Reset friend code"),
+            child: const Text("Reset friend code"),
             onPressed: () {
-              debugPrint("Reset friend code not yet implemented");
+              PublicFeedUtil.resetFriendCode(context);
             },
             style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
+          ),
+        ),
+        Center(
+          child: ElevatedButton(
+            child: const Text("Add friend from clipboard"),
+            onPressed: () async {
+              ClipboardData? data = await Clipboard.getData("text/plain");
+              if (data != null) {
+                debugPrint("ClipboardData: ${data.text}");
+              }
+            },
+            style: ElevatedButton.styleFrom(primary: Colors.lightBlue),
           ),
         ),
         Center(
@@ -69,6 +83,6 @@ class ProfilePage extends StatelessWidget {
         )),
       ],
       crossAxisAlignment: CrossAxisAlignment.start,
-    )));
+    )); //);
   }
 }

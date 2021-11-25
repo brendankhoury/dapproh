@@ -1,4 +1,5 @@
 import 'package:dapproh/controllers/navigation.dart';
+import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/screens/home/home.dart';
 import 'package:dapproh/screens/home/post_camera.dart';
 import 'package:dapproh/screens/home/post_confirmation.dart';
@@ -16,11 +17,15 @@ void main() async {
 
   await Hive.initFlutter();
   await Hive.openBox("configuration");
+  await Hive.openBox("cache");
 
   runApp(MultiProvider(providers: [
     ListenableProvider<NavigationController>(
       create: (_) => NavigationController(),
     ),
+    ListenableProvider<UserDataController>(
+      create: (_) => UserDataController(),
+    )
   ], child: const Dapproh()));
 }
 

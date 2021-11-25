@@ -19,10 +19,10 @@ class PrivateUser {
     @returns if the user was inserted or not
   */
   bool addUser(FollowedUser user) {
-    if (following.containsKey(user.publicKey)) {
+    if (following.containsKey(user.userId)) {
       return false;
     }
-    following.putIfAbsent(user.publicKey, () => user);
+    following.putIfAbsent(user.userId, () => user);
     return true;
   }
 
@@ -32,10 +32,10 @@ class PrivateUser {
     @returns if the user was updated or not
   */
   bool updateUser(FollowedUser user) {
-    if (!following.containsKey(user.publicKey)) {
+    if (!following.containsKey(user.userId)) {
       return false;
     }
-    following.update(user.publicKey, (_) => user);
+    following.update(user.userId, (_) => user);
     return true;
   }
 

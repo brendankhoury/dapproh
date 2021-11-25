@@ -1,13 +1,16 @@
+import 'package:dapproh/models/public_user.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:skynet/skynet.dart';
 part 'followed_user.g.dart';
 
 @JsonSerializable()
 class FollowedUser {
-  String feedLocation;
+  // String feedLocation; // Location of skynet, in the future users should be able to choose. Will  require an update to the friend code
   String followerKey; // Used to decrypt the feed
-  String publicKey; // Used to find the feed on Skynet
+  String userId; // Used to find the feed on Skynet
   // String nickname;
-  FollowedUser(this.feedLocation, this.followerKey, this.publicKey);
+
+  FollowedUser(this.followerKey, this.userId);
 
   factory FollowedUser.fromJson(Map<String, dynamic> json) => _$FollowedUserFromJson(json);
   // : following = jsonDecode(json['following']),

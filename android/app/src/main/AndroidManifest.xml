@@ -2,7 +2,7 @@
     package="com.example.dapproh">
    <application
         android:label="dapproh"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

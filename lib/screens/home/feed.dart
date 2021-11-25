@@ -1,46 +1,43 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:dapproh/components/post.dart';
+import 'package:dapproh/models/feed.dart';
+import 'package:dapproh/models/post.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class FeedPage extends StatelessWidget {
+class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
 
   @override
+  _FeedPageState createState() => _FeedPageState();
+}
+
+// Things to do:
+// Pull from feed.
+// Make request to all followers
+//
+class _FeedPageState extends State<FeedPage> {
+  Feed feed = Feed();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-            child: Row(children: [
-              Container(
-                  child: CircleAvatar(
-                    child: CircleAvatar(
-                      backgroundImage: NetworkImage("https://picsum.photos/100"),
-                    ),
-                    backgroundColor: CupertinoColors.white,
-                    radius: 22,
-                  ),
-                  margin: EdgeInsets.only(right: 5)),
-              Text("Poster Name", textScaleFactor: 1.5)
-            ]),
-            margin: EdgeInsets.only(left: 10, bottom: 5),
-          ),
-          Image(
-            image: NetworkImage("https://picsum.photos/700"),
-            fit: BoxFit.cover,
-          ),
-          Container(
-            child: Text(
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum"),
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          ),
-          Divider(
-            color: CupertinoColors.white,
-          )
-        ]);
-      },
-      itemCount: 5,
-    );
+    if (feed.timelineOfPosts.isEmpty) {
+      return Scaffold(
+        body: Center(child: Text("No posts found yet...")),
+      );
+    } else {
+      return ListView.builder(
+        itemBuilder: (context, index) {
+          return PostWidget(feed.timelineOfPosts[index]);
+        },
+        itemCount: feed.timelineOfPosts.length,
+      );
+    }
   }
 }
