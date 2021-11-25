@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
 import 'package:dapproh/models/skynet_schema.dart';
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:skynet/skynet.dart';
@@ -22,19 +23,25 @@ class UserDataController extends ChangeNotifier {
   Feed feed = Feed();
 
   void initUser() async {
+    String mnemonic = ConfigBox.getMnemonic();
     // Check box for local private user
     // Check box for local public  user
     // Load private profile and send out data
 
-    Box configBox = Hive.box("configuration");
-    String mnemonic = configBox.get("mnemonic");
+    PrivateUser privateUser = ConfigBox.getPrivateUser();
+
+    // The following line is not really necessary
+    // String publicUserData = configBox.get("publicFeed");
+
+    // TODO: Move to another file
     privateDataKey = await EncUtil.mnemonicToKey(mnemonic);
 
     assert(validateMnemonic(mnemonic));
 
     // Check if the private user exists in box.
     user = await SkynetUser.fromMySkySeedRaw(mnemonicToSeed(mnemonic));
-    configBox.put("userId", user.id);
+
+    ConfigBox.setUserId(user.id);
     try {
       debugPrint(mnemonicToSeedHex(mnemonic));
       await skynetClient.skydb.getFile(user, PRIVATE_USER_FEED_KEY).then(onPrivateContentRetrieve); //1.onError(onContentRetrievalFailure);
@@ -48,15 +55,14 @@ class UserDataController extends ChangeNotifier {
       debugPrint("Peepo Panic, null file content");
       debugPrint("${content.asString}");
     } else {
-      Box configBox = Hive.box("configuration");
-
-      String privateIv16 = configBox.get("privateIv16");
+      // String privateIv16 = configBox.get("privateIv16");
       debugPrint("privateUserFeed: ${content.asString}");
 
       AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
 
-      String decryptedContent =
-          encryption.gcm.decrypt(enc: content.asString.toString().substring(content.asString.toString().indexOf(' ') + 1), iv: privateIv16);
+      String decryptedContent = encryption.gcm.decrypt(
+          enc: content.asString.toString().substring(content.asString.toString().indexOf(' ') + 1),
+          iv: content.asString.toString().substring(0, content.asString.toString().indexOf(' ')));
       debugPrint("privateUserFeed: decrypted content $decryptedContent");
 
       Map<String, dynamic> decodedJson = jsonDecode(decryptedContent);
@@ -70,16 +76,13 @@ class UserDataController extends ChangeNotifier {
     debugPrint("Failure ${error.toString()}\n Runtimetype: ${error.runtimeType}");
     if (error.toString() == "Exception: not found") {
       debugPrint("Not found exception, creating a new file");
-      Box configBox = Hive.box("configuration");
       CryptKey keyGen = CryptKey();
 
       PrivateUser privateUser = PrivateUser({}, [], keyGen.genFortuna());
       AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
       String privateUserString = jsonEncode(privateUser);
-      configBox.put("privateUser", privateUserString);
+      ConfigBox.setPrivateUser(privateUser);
       String privateIv16 = keyGen.genDart();
-
-      configBox.put("privateIv16", privateIv16);
 
       await skynetClient.skydb
           .setFile(

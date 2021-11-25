@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:skynet/skynet.dart';
+import '../../schemas/config_box.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: (pressedContext) {
               String newMnemonic = generateMnemonic();
               debugPrint("Resetting Mnemonic $newMnemonic");
-              Hive.box("configuration").put("mnemonic", newMnemonic);
+              ConfigBox.setMnemonic(newMnemonic);
               // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(

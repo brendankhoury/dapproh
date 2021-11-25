@@ -1,20 +1,14 @@
 import 'dart:convert';
 
 import 'package:dapproh/models/skynet_schema.dart';
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:hive/hive.dart';
 
 class PrivateFeedUtil {
   static PrivateUser? user;
-  static Box configBox = Hive.box("configuration");
 
   static PrivateUser getPrivateUser() {
-    if (user == null) {
-      if (configBox.get("privateUser") == '') {
-        throw UnimplementedError("The private user should have been set in restore or in creation");
-      } else {
-        user = PrivateUser.fromJson(jsonDecode(configBox.get("privateUser")));
-      }
-    }
+    user ??= ConfigBox.getPrivateUser();
     return user!;
   }
 
@@ -26,7 +20,7 @@ class PrivateFeedUtil {
 
   static void updatePrivateFeed() {
     // Encrypt and update
-    configBox.put("privateUser", json.encode(user!.toJson()));
+    ConfigBox.setPrivateUser(user!);
   }
 
   static bool addUser(FollowedUser foreignUser) {

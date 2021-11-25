@@ -1,5 +1,6 @@
 import 'package:dapproh/components/mnemonic.dart';
 import 'package:dapproh/controllers/navigation.dart';
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -15,12 +16,12 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage> {
   void regenerateMnemonic() {
-    Hive.box("configuration").put("mnemonic", bip39.generateMnemonic());
+    ConfigBox.setMnemonic(bip39.generateMnemonic());
   }
 
   @override
   Widget build(BuildContext context) {
-    if (Hive.box("configuration").get("mnemonic") == null) {
+    if (ConfigBox.getMnemonic() == '') {
       regenerateMnemonic();
     }
 
