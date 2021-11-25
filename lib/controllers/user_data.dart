@@ -4,11 +4,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bip39/bip39.dart';
 import 'package:dapproh/models/skynet_schema.dart';
 import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:skynet/skynet.dart';
 import 'package:steel_crypt/steel_crypt.dart';
 import '../util/enc_util.dart';
@@ -36,14 +34,11 @@ class UserDataController extends ChangeNotifier {
     // TODO: Move to another file
     privateDataKey = await EncUtil.mnemonicToKey(mnemonic);
 
-    assert(validateMnemonic(mnemonic));
-
     // Check if the private user exists in box.
-    user = await SkynetUser.fromMySkySeedRaw(mnemonicToSeed(mnemonic));
+    user = await ConfigBox.getOwnedSkynetUser();
 
     ConfigBox.setUserId(user.id);
     try {
-      debugPrint(mnemonicToSeedHex(mnemonic));
       await skynetClient.skydb.getFile(user, PRIVATE_USER_FEED_KEY).then(onPrivateContentRetrieve); //1.onError(onContentRetrievalFailure);
     } catch (e) {
       onContentRetrievalFailure(e);

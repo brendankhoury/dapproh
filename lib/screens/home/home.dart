@@ -1,14 +1,10 @@
-import 'package:bip39/bip39.dart';
-import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/screens/home/feed.dart';
 import 'package:dapproh/screens/home/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
-import 'package:skynet/skynet.dart';
 import '../../schemas/config_box.dart';
 
 class HomePage extends StatefulWidget {
@@ -54,9 +50,8 @@ class _HomePageState extends State<HomePage> {
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) {
-              String newMnemonic = generateMnemonic();
+              String newMnemonic = ConfigBox.regenerateMnemonic();
               debugPrint("Resetting Mnemonic $newMnemonic");
-              ConfigBox.setMnemonic(newMnemonic);
               // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(

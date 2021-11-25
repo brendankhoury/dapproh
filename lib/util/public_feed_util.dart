@@ -6,14 +6,13 @@ import 'dart:typed_data';
 import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/models/skynet_schema.dart';
 import 'package:dapproh/schemas/config_box.dart';
-import 'package:dapproh/util/private_feed_util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skynet/skynet.dart';
 import 'package:steel_crypt/steel_crypt.dart';
 
 class PublicFeedUtil {
-  static const String PUBLIC_FEED_KEY = 'dapproh_public_feed';
+  // static const String PUBLIC_FEED_KEY = 'dapproh_public_feed';
   static const String FRIEND_FILE_KEY = 'dapproh_friend_file';
 
   static final CryptKey keyGen = CryptKey();
@@ -23,33 +22,7 @@ class PublicFeedUtil {
     // call updatePublicFed.
     PublicFeed feed = ConfigBox.getOwnedFeed();
     feed.addPost(post);
-    ConfigBox.setOwnedFeed(feed);
-
-    return await updatePublicFeed();
-  }
-
-  static Future<bool> updatePublicFeed() async {
-    SkynetClient client = SkynetClient();
-    SkynetUser user = await SkynetUser.fromMySkySeedRaw(ConfigBox.getMnemonicSeed());
-
-    String newIv = keyGen.genDart();
-
-    String publicFeedContent = jsonEncode(ConfigBox.getOwnedFeed().toJson());
-
-    AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: PrivateUser.fromJson(PrivateFeedUtil.getPrivateUser().toJson()).encryptionKey);
-
-    String encryptedPublicFeedContent = encryption.gcm.encrypt(inp: publicFeedContent, iv: newIv);
-    String ivAndContent = newIv + ' ' + encryptedPublicFeedContent;
-    bool publicFeedSet = await client.skydb.setFile(user, PUBLIC_FEED_KEY, SkyFile(content: Uint8List.fromList(utf8.encode(ivAndContent))));
-
-    if (publicFeedSet) {
-      debugPrint("Successfull post");
-      return true;
-    } else {
-      debugPrint("Post failed");
-    }
-
-    return false;
+    return await ConfigBox.setOwnedFeed(feed, setSkynet: true);
   }
 
   static Future<String> resetFriendCode(BuildContext context) async {

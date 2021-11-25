@@ -2,10 +2,7 @@ import 'package:dapproh/components/mnemonic.dart';
 import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-
-import 'package:bip39/bip39.dart' as bip39;
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
@@ -15,14 +12,10 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  void regenerateMnemonic() {
-    ConfigBox.setMnemonic(bip39.generateMnemonic());
-  }
-
   @override
   Widget build(BuildContext context) {
     if (ConfigBox.getMnemonic() == '') {
-      regenerateMnemonic();
+      ConfigBox.regenerateMnemonic();
     }
 
     return Scaffold(
@@ -34,7 +27,7 @@ class _CreatePageState extends State<CreatePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const MnemonicDisplay(),
-            OutlinedButton(onPressed: regenerateMnemonic, child: const Text("Regenerate Mnemonic")),
+            const OutlinedButton(onPressed: ConfigBox.regenerateMnemonic, child: Text("Regenerate Mnemonic")),
             TextButton(
                 onPressed: () {
                   NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
