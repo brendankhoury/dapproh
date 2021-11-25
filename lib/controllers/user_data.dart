@@ -15,13 +15,17 @@ import '../util/enc_util.dart';
 class UserDataController extends ChangeNotifier {
   late SkynetUser user;
   late String privateDataKey;
-  static const String PRIVATE_USER_IV_KEY = 'dapproh_private_user_iv';
+  // static const String PRIVATE_USER_IV_KEY = 'dapproh_private_user_iv';
   static const String PRIVATE_USER_FEED_KEY = 'dapproh_private_user_feed';
 
   SkynetClient skynetClient = SkynetClient();
   Feed feed = Feed();
 
   void initUser() async {
+    // Check box for local private user
+    // Check box for local public  user
+    // Load private profile and send out data
+
     Box configBox = Hive.box("configuration");
     String mnemonic = configBox.get("mnemonic");
     privateDataKey = await EncUtil.mnemonicToKey(mnemonic);
@@ -51,7 +55,8 @@ class UserDataController extends ChangeNotifier {
 
       AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
 
-      String decryptedContent = encryption.gcm.decrypt(enc: content.asString, iv: privateIv16);
+      String decryptedContent =
+          encryption.gcm.decrypt(enc: content.asString.toString().substring(content.asString.toString().indexOf(' ') + 1), iv: privateIv16);
       debugPrint("privateUserFeed: decrypted content $decryptedContent");
 
       Map<String, dynamic> decodedJson = jsonDecode(decryptedContent);
@@ -75,17 +80,13 @@ class UserDataController extends ChangeNotifier {
       String privateIv16 = keyGen.genDart();
 
       configBox.put("privateIv16", privateIv16);
-      await skynetClient.skydb
-          .setFile(user, PRIVATE_USER_IV_KEY,
-              SkyFile(content: Uint8List.fromList(utf8.encode(privateIv16)), filename: "private_iv16.txt", type: "text/plain"))
-          .then((value) => debugPrint("$value, initialization vector file set"))
-          .onError((error, stackTrace) => debugPrint("${error.toString()} ${stackTrace.toString()}"));
+
       await skynetClient.skydb
           .setFile(
               user,
               PRIVATE_USER_FEED_KEY,
               SkyFile(
-                  content: Uint8List.fromList(utf8.encode(encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
+                  content: Uint8List.fromList(utf8.encode(privateIv16 + ' ' + encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
                   filename: "private.txt",
                   type: "text/plain"))
           .then((value) => debugPrint("$value, private.txt file set"))

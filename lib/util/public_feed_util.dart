@@ -7,6 +7,7 @@ import 'package:bip39/bip39.dart';
 import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/models/owned_feed.dart';
 import 'package:dapproh/models/skynet_schema.dart';
+import 'package:dapproh/util/private_feed_util.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
@@ -15,10 +16,7 @@ import 'package:steel_crypt/steel_crypt.dart';
 
 class PublicFeedUtil {
   static const String PUBLIC_FEED_KEY = 'dapproh_public_feed';
-  static const String PUBLIC_FEED_IV_KEY = 'dapproh_public_feed_iv';
-
   static const String FRIEND_FILE_KEY = 'dapproh_friend_file';
-  static const String FRIEND_FILE_IV_KEY = 'dapproh_friend_file_iv';
 
   static final CryptKey keyGen = CryptKey();
   static final Box configBox = Hive.box("configuration");
@@ -38,29 +36,22 @@ class PublicFeedUtil {
     SkynetUser user = await SkynetUser.fromMySkySeedRaw(configBox.get("mnemonic"));
 
     String newIv = keyGen.genDart();
-    bool ivSet = await client.skydb
-        .setFile(user, PUBLIC_FEED_IV_KEY, SkyFile(content: Uint8List.fromList(utf8.encode(newIv)), filename: "newIvFile", type: "text/plain"));
 
-    if (ivSet) {
-      debugPrint("PUBLIC FEED IV SET SUCCESS");
-      String publicFeedContent = jsonEncode(OwnedFeed.getFeed().toJson());
+    String publicFeedContent = jsonEncode(OwnedFeed.getFeed().toJson());
 
-      AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: PrivateUser.fromJson(jsonDecode(configBox.get("privateUser"))).encryptionKey);
+    AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: PrivateUser.fromJson(PrivateFeedUtil.getPrivateUser().toJson()).encryptionKey);
 
-      String encryptedPublicFeedContent = encryption.gcm.encrypt(inp: publicFeedContent, iv: newIv);
+    String encryptedPublicFeedContent = encryption.gcm.encrypt(inp: publicFeedContent, iv: newIv);
+    String ivAndContent = newIv + ' ' + encryptedPublicFeedContent;
+    bool publicFeedSet = await client.skydb.setFile(user, PUBLIC_FEED_KEY, SkyFile(content: Uint8List.fromList(utf8.encode(ivAndContent))));
 
-      bool publicFeedSet =
-          await client.skydb.setFile(user, PUBLIC_FEED_KEY, SkyFile(content: Uint8List.fromList(utf8.encode(encryptedPublicFeedContent))));
-
-      if (publicFeedSet) {
-        debugPrint("Successfull post");
-        return true;
-      } else {
-        debugPrint("Post failed");
-      }
+    if (publicFeedSet) {
+      debugPrint("Successfull post");
+      return true;
     } else {
-      debugPrint("PUBLIC FEED IV SET FAILURE\n Post Failed");
+      debugPrint("Post failed");
     }
+
     return false;
   }
 
@@ -69,8 +60,8 @@ class PublicFeedUtil {
     // Generate key
     // encrypt public feed key with newly generated key.
     // return data
-    String friendKey = keyGen.genFortuna();
-    String friendIv = keyGen.genDart();
+    final String friendKey = keyGen.genFortuna();
+    final String friendIv = keyGen.genDart();
     AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: friendKey);
 
     configBox.put("friendKey", friendKey);
@@ -80,22 +71,21 @@ class PublicFeedUtil {
     SkynetUser user = await SkynetUser.fromMySkySeedRaw(mnemonicToSeed(configBox.get("mnemonic")));
     PrivateUser privateUser = PrivateUser.fromJson(jsonDecode(configBox.get("privateUser")));
 
-    String encryptedEncryptionKey = encryption.gcm.encrypt(inp: privateUser.encryptionKey, iv: friendIv);
+    final String encryptedEncryptionKey = encryption.gcm.encrypt(inp: privateUser.encryptionKey + ' ' + keyGen.genDart(), iv: friendIv);
+    final String ivAndContent = friendIv + ' ' + encryptedEncryptionKey;
 
     UserDataController userDataController = Provider.of<UserDataController>(context, listen: false);
     SkynetClient skynetClient = SkynetClient();
 
-    bool friendIvSet = await skynetClient.skydb
-        .setFile(user, FRIEND_FILE_KEY, SkyFile(content: Uint8List.fromList(utf8.encode(friendIv)), filename: "friendIv.txt", type: "text/plain"));
     bool friendFileSet = await skynetClient.skydb.setFile(
         user,
-        UserDataController.PRIVATE_USER_FEED_KEY,
+        FRIEND_FILE_KEY,
         SkyFile(
-            content: Uint8List.fromList(utf8.encode(encryptedEncryptionKey + ' ' + keyGen.genDart())),
+            content: Uint8List.fromList(utf8.encode(ivAndContent)),
             // By adding a dart to the end, brute forcing the key is much more difficult (the friend file will change contents every time rather than only changing the key, the dart only serves as additional randomness.)
             filename: "friend.txt",
             type: "text/plain"));
-    debugPrint("friendIvSet: $friendIvSet\nfriendFileSet: $friendFileSet\nReset friend code finished");
+    debugPrint("friendFileSet: $friendFileSet\nReset friend code finished");
     return getFriendCode(friendKey, friendIv, user.id);
   }
 

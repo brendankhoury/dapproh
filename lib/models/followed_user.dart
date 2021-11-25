@@ -16,6 +16,10 @@ class FollowedUser {
   // : following = jsonDecode(json['following']),
   //   postArchive = jsonDecode(json['postArchive']),
   //   encryptionKey = json['encryptionKey'];
+  factory FollowedUser.fromFriendFile(String friendFile) {
+    List<String> splitFriendCode = friendFile.split(" ");
+    return FollowedUser(splitFriendCode[0], splitFriendCode[1]);
+  }
 
   Map<String, dynamic> toJson() => _$FollowedUserToJson(this);
 }
