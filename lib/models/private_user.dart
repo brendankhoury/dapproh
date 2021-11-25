@@ -1,5 +1,6 @@
 import 'package:dapproh/models/followed_user.dart';
 import 'package:dapproh/models/post.dart';
+import 'package:flutter/widgets.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'private_user.g.dart';
@@ -48,5 +49,13 @@ class PrivateUser {
   //   postArchive = jsonDecode(json['postArchive']),
   //   encryptionKey = json['encryptionKey'];
 
-  Map<String, dynamic> toJson() => _$PrivateUserToJson(this); // {'following': following, 'postArchive': postArchive, 'encryptionKey': encryptionKey};
+  Map<String, dynamic> toJson() {
+    // NOTE, toJSON done manually.
+    return <String, dynamic>{
+      'following': following.map((key, value) => MapEntry(key, value.toJson())),
+      'postArchive': postArchive.map((e) => e.toJson()).toList(),
+      'encryptionKey': encryptionKey,
+    };
+  }
+  // Map<String, dynamic> toJson() => _$PrivateUserToJson(this); // {'following': following, 'postArchive': postArchive, 'encryptionKey': encryptionKey};
 }

@@ -49,8 +49,8 @@ class _HomePageState extends State<HomePage> {
             title: ("Post"),
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
-            onPressed: (pressedContext) {
-              String newMnemonic = ConfigBox.regenerateMnemonic();
+            onPressed: (pressedContext) async {
+              String newMnemonic = await ConfigBox.regenerateMnemonic();
               debugPrint("Resetting Mnemonic $newMnemonic");
               // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),

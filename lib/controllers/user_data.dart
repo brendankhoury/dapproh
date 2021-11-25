@@ -69,29 +69,29 @@ class UserDataController extends ChangeNotifier {
 
   void onContentRetrievalFailure(error) async {
     debugPrint("Failure ${error.toString()}\n Runtimetype: ${error.runtimeType}");
-    if (error.toString() == "Exception: not found") {
-      debugPrint("Not found exception, creating a new file");
-      CryptKey keyGen = CryptKey();
+    // if (error.toString() == "Exception: not found") {
+    //   debugPrint("Not found exception, creating a new file");
+    //   CryptKey keyGen = CryptKey();
 
-      PrivateUser privateUser = PrivateUser({}, [], keyGen.genFortuna());
-      AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
-      String privateUserString = jsonEncode(privateUser);
-      ConfigBox.setPrivateUser(privateUser);
-      String privateIv16 = keyGen.genDart();
+    //   PrivateUser privateUser = PrivateUser({}, [], keyGen.genFortuna());
+    //   AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
+    //   String privateUserString = jsonEncode(privateUser);
+    //   ConfigBox.setPrivateUser(privateUser);
+    //   String privateIv16 = keyGen.genDart();
 
-      await skynetClient.skydb
-          .setFile(
-              user,
-              PRIVATE_USER_FEED_KEY,
-              SkyFile(
-                  content: Uint8List.fromList(utf8.encode(privateIv16 + ' ' + encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
-                  filename: "private.txt",
-                  type: "text/plain"))
-          .then((value) => debugPrint("$value, private.txt file set"))
-          .onError((error, stackTrace) => debugPrint("${error.toString()} ${stackTrace.toString()}"));
-    } else {
-      debugPrint("Exception not identified: ${error.toString()}");
-    }
+    //   await skynetClient.skydb
+    //       .setFile(
+    //           user,
+    //           PRIVATE_USER_FEED_KEY,
+    //           SkyFile(
+    //               content: Uint8List.fromList(utf8.encode(privateIv16 + ' ' + encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
+    //               filename: "private.txt",
+    //               type: "text/plain"))
+    //       .then((value) => debugPrint("$value, private.txt file set"))
+    //       .onError((error, stackTrace) => debugPrint("${error.toString()} ${stackTrace.toString()}"));
+    // } else {
+    //   debugPrint("Exception not identified: ${error.toString()}");
+    // }
   }
 
   void updateUser(/* data */) {

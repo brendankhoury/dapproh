@@ -17,13 +17,19 @@ class ConfigBox {
   static Uint8List getMnemonicSeed() => mnemonicToSeed(getMnemonic());
   static void setMnemonic(String mnemonic) => configBox.put("mnemonic", mnemonic);
 
-  static String regenerateMnemonic() {
+  static Future<String> regenerateMnemonic() async {
     String newMnemonic = generateMnemonic();
     setMnemonic(newMnemonic);
     CryptKey keyGen = CryptKey();
-    setPrivateUser(PrivateUser({}, [], keyGen.genFortuna()));
     setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true);
-    getOwnedSkynetUser().then((value) => setUserId(value.id));
+    String userId = (await getOwnedSkynetUser()).id;
+    setUserId(userId);
+    String publicFeedKey = keyGen.genFortuna();
+    debugPrint("Pre setting private user");
+    setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
+
+    debugPrint("Post setting private user");
+    PrivateUser testUser = getPrivateUser();
     return newMnemonic;
   }
 
@@ -32,10 +38,12 @@ class ConfigBox {
   }
 
   static PrivateUser getPrivateUser() {
-    String privateUserData = configBox.get("privateUser");
-    if (privateUserData == '') {
+    debugPrint("RetrievingPrivateUser");
+    if (!configBox.containsKey("privateUser")) {
       throw UnsupportedError("PrivateUserData is null in configBox");
     }
+    String privateUserData = configBox.get("privateUser");
+    debugPrint("PrivateUserData: $privateUserData");
     return PrivateUser.fromJson(jsonDecode(privateUserData));
   }
 
@@ -80,9 +88,14 @@ class ConfigBox {
   static String getUserId() => configBox.get("userId");
   static void setUserId(String id) => configBox.put("userId", id);
 
-  static String getUserName() => configBox.get("name");
+  static String getUserName() {
+    if (!configBox.containsKey("name")) {
+      setUserName("Unknown Name");
+    }
+    return configBox.get("name");
+  }
+
   static void setUserName(String name) {
     configBox.put("name", name);
-    // Potentially adjust public and p
   }
 }
