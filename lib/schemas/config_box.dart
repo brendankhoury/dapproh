@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -21,15 +23,12 @@ class ConfigBox {
     String newMnemonic = generateMnemonic();
     setMnemonic(newMnemonic);
     CryptKey keyGen = CryptKey();
-    setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true);
     String userId = (await getOwnedSkynetUser()).id;
     setUserId(userId);
     String publicFeedKey = keyGen.genFortuna();
-    debugPrint("Pre setting private user");
     setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
+    setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true);
 
-    debugPrint("Post setting private user");
-    PrivateUser testUser = getPrivateUser();
     return newMnemonic;
   }
 
@@ -38,7 +37,6 @@ class ConfigBox {
   }
 
   static PrivateUser getPrivateUser() {
-    debugPrint("RetrievingPrivateUser");
     if (!configBox.containsKey("privateUser")) {
       throw UnsupportedError("PrivateUserData is null in configBox");
     }
@@ -48,8 +46,8 @@ class ConfigBox {
   }
 
   static void setPrivateUser(PrivateUser user) async {
+    debugPrint("SettingPrivateUser: ${jsonEncode(user.toJson())}");
     configBox.put("privateUser", jsonEncode(user.toJson()));
-    // Update in skynet
   }
 
   static Future<SkynetUser> getOwnedSkynetUser() async {

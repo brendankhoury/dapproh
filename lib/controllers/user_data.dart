@@ -9,7 +9,6 @@ import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
 import 'package:skynet/skynet.dart';
 import 'package:steel_crypt/steel_crypt.dart';
-import '../util/enc_util.dart';
 
 class UserDataController extends ChangeNotifier {
   late SkynetUser user;
@@ -21,28 +20,52 @@ class UserDataController extends ChangeNotifier {
   Feed feed = Feed();
 
   void initUser() async {
-    String mnemonic = ConfigBox.getMnemonic();
-    // Check box for local private user
-    // Check box for local public  user
-    // Load private profile and send out data
+    populateFeed();
 
-    PrivateUser privateUser = ConfigBox.getPrivateUser();
+    // No need anymore, require user to be initialized at this point.
+    // String mnemonic = ConfigBox.getMnemonic();
+    // // Check box for local private user
+    // // Check box for local public  user
+    // // Load private profile and send out data
 
-    // The following line is not really necessary
-    // String publicUserData = configBox.get("publicFeed");
+    // PrivateUser privateUser = ConfigBox.getPrivateUser();
 
-    // TODO: Move to another file
-    privateDataKey = await EncUtil.mnemonicToKey(mnemonic);
+    // // The following line is not really necessary
+    // // String publicUserData = configBox.get("publicFeed");
 
-    // Check if the private user exists in box.
-    user = await ConfigBox.getOwnedSkynetUser();
+    // // TODO: Move to another file
+    // privateDataKey = await EncUtil.mnemonicToKey(mnemonic);
 
-    ConfigBox.setUserId(user.id);
-    try {
-      await skynetClient.skydb.getFile(user, PRIVATE_USER_FEED_KEY).then(onPrivateContentRetrieve); //1.onError(onContentRetrievalFailure);
-    } catch (e) {
-      onContentRetrievalFailure(e);
-    }
+    // // Check if the private user exists in box.
+    // user = await ConfigBox.getOwnedSkynetUser();
+
+    // ConfigBox.setUserId(user.id);
+    // try {
+    //   await skynetClient.skydb.getFile(user, PRIVATE_USER_FEED_KEY).then(onPrivateContentRetrieve); //1.onError(onContentRetrievalFailure);
+    // } catch (e) {
+    //   onContentRetrievalFailure(e);
+    // }
+  }
+
+  void populateFeed() {
+    Map<String, FollowedUser> following = ConfigBox.getPrivateUser().following;
+    debugPrint("PopulateFeed called, $following");
+    SkynetClient client = SkynetClient();
+    following.forEach((key, value) async {
+      SkynetUser followedUser = SkynetUser.fromId(value.userId);
+      try {
+        debugPrint("Followed user retieval\n");
+        List<String> rawFeedData = (await client.skydb.getFile(followedUser, ConfigBox.PUBLIC_FEED_KEY)).asString.toString().split(' ');
+        String followedUserIv = rawFeedData[0];
+        String encryptedFeedString = rawFeedData[1];
+        AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: value.followerKey);
+        String decryptedFeedString = encryption.gcm.decrypt(enc: encryptedFeedString, iv: followedUserIv);
+        debugPrint("encryptedFeedString: $encryptedFeedString");
+        debugPrint("decryptedFeedString: $decryptedFeedString");
+      } catch (e) {
+        debugPrint("Error retrieving followed user $e");
+      }
+    });
   }
 
   void onPrivateContentRetrieve(content) async {
@@ -69,29 +92,29 @@ class UserDataController extends ChangeNotifier {
 
   void onContentRetrievalFailure(error) async {
     debugPrint("Failure ${error.toString()}\n Runtimetype: ${error.runtimeType}");
-    // if (error.toString() == "Exception: not found") {
-    //   debugPrint("Not found exception, creating a new file");
-    //   CryptKey keyGen = CryptKey();
+    if (error.toString() == "Exception: not found") {
+      debugPrint("Not found exception, creating a new file");
+      CryptKey keyGen = CryptKey();
 
-    //   PrivateUser privateUser = PrivateUser({}, [], keyGen.genFortuna());
-    //   AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
-    //   String privateUserString = jsonEncode(privateUser);
-    //   ConfigBox.setPrivateUser(privateUser);
-    //   String privateIv16 = keyGen.genDart();
+      PrivateUser privateUser = PrivateUser({}, [], keyGen.genFortuna());
+      AesCrypt encryption = AesCrypt(key: privateDataKey, padding: PaddingAES.pkcs7);
+      String privateUserString = jsonEncode(privateUser);
+      ConfigBox.setPrivateUser(privateUser);
+      String privateIv16 = keyGen.genDart();
 
-    //   await skynetClient.skydb
-    //       .setFile(
-    //           user,
-    //           PRIVATE_USER_FEED_KEY,
-    //           SkyFile(
-    //               content: Uint8List.fromList(utf8.encode(privateIv16 + ' ' + encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
-    //               filename: "private.txt",
-    //               type: "text/plain"))
-    //       .then((value) => debugPrint("$value, private.txt file set"))
-    //       .onError((error, stackTrace) => debugPrint("${error.toString()} ${stackTrace.toString()}"));
-    // } else {
-    //   debugPrint("Exception not identified: ${error.toString()}");
-    // }
+      await skynetClient.skydb
+          .setFile(
+              user,
+              PRIVATE_USER_FEED_KEY,
+              SkyFile(
+                  content: Uint8List.fromList(utf8.encode(privateIv16 + ' ' + encryption.gcm.encrypt(inp: privateUserString, iv: privateIv16))),
+                  filename: "private.txt",
+                  type: "text/plain"))
+          .then((value) => debugPrint("$value, private.txt file set"))
+          .onError((error, stackTrace) => debugPrint("${error.toString()} ${stackTrace.toString()}"));
+    } else {
+      debugPrint("Exception not identified: ${error.toString()}");
+    }
   }
 
   void updateUser(/* data */) {

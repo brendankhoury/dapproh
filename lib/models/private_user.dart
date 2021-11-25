@@ -51,6 +51,7 @@ class PrivateUser {
 
   Map<String, dynamic> toJson() {
     // NOTE, toJSON done manually.
+    debugPrint("PrivateUser toJson called: following: ${following.map((key, value) => MapEntry(key, value.toJson()))}");
     return <String, dynamic>{
       'following': following.map((key, value) => MapEntry(key, value.toJson())),
       'postArchive': postArchive.map((e) => e.toJson()).toList(),
