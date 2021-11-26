@@ -32,7 +32,8 @@ class ConfigBox {
     String userId = (await getOwnedSkynetUser()).id;
     setUserId(userId);
     String publicFeedKey = keyGen.genFortuna();
-    setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
+    setPrivateUser(PrivateUser({}, [], publicFeedKey));
+    // setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
     setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true).then((value) {
       if (value) {
         // In this case, the friendCode is simply set
@@ -100,7 +101,7 @@ class ConfigBox {
 
     final AesCrypt friendFileEncryption = AesCrypt(padding: PaddingAES.pkcs7, key: friendFileKey);
     if (friendFile.asString != null) {
-      final String friendKey = friendFileEncryption.gcm.decrypt(enc: friendFile.asString!, iv: friendIv);
+      final String friendKey = friendFileEncryption.gcm.decrypt(enc: friendFile.asString!, iv: friendIv).substring(0, 44);
       debugPrint("DecryptedFriendFile: $friendKey");
       final newUser = FollowedUser(friendKey, friendId);
       try {
@@ -124,6 +125,8 @@ class ConfigBox {
     String followedUserIv = rawFeedData[0];
     String encryptedFeedString = rawFeedData[1];
     AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: user.followerKey);
+    debugPrint(
+        "RawFeedData: $rawFeedData\nEncryptedFeedString: $encryptedFeedString\nFollowedUserKey: ${user.followerKey}\nReal key: ${getPrivateUser().encryptionKey}");
     String decryptedFeedString = encryption.gcm.decrypt(enc: encryptedFeedString, iv: followedUserIv);
     debugPrint("encryptedFeedString: $encryptedFeedString");
     debugPrint("decryptedFeedString: $decryptedFeedString");
@@ -149,8 +152,8 @@ class ConfigBox {
     final SkynetUser user = await SkynetUser.fromMySkySeedRaw(getMnemonicSeed());
     final PrivateUser privateUser = getPrivateUser();
 
-    final String encryptedEncryptionKey = encryption.gcm.encrypt(inp: privateUser.encryptionKey + ' ' + keyGen.genDart(), iv: friendIv);
-    final String ivAndContent = friendIv + ' ' + encryptedEncryptionKey;
+    final String encryptedEncryptionKey = encryption.gcm.encrypt(inp: privateUser.encryptionKey + keyGen.genDart(), iv: friendIv);
+    final String ivAndContent = encryptedEncryptionKey;
 
     final bool friendFileSet = await client.skydb.setFile(
         user,
