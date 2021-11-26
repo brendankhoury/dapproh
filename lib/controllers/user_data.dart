@@ -62,6 +62,9 @@ class UserDataController extends ChangeNotifier {
         String decryptedFeedString = encryption.gcm.decrypt(enc: encryptedFeedString, iv: followedUserIv);
         debugPrint("encryptedFeedString: $encryptedFeedString");
         debugPrint("decryptedFeedString: $decryptedFeedString");
+        PublicFeed recievedFeed = PublicFeed.fromJson(jsonDecode(decryptedFeedString));
+        feed.addPosts(recievedFeed.posts);
+        notifyListeners();
       } catch (e) {
         debugPrint("Error retrieving followed user $e");
       }
