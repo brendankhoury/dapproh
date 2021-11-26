@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PostWidget extends StatelessWidget {
-  Post post;
-  PostWidget(this.post, {Key? key}) : super(key: key);
+  final Post post;
+  const PostWidget(this.post, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +24,8 @@ class PostWidget extends StatelessWidget {
         ]),
         margin: const EdgeInsets.only(left: 10, bottom: 5),
       ),
-      const Image(
-        image: NetworkImage("https://picsum.photos/700"), //todo: implement the post avatar thingy
+      Image(
+        image: NetworkImage(post.postLink), //todo: implement the post avatar thingy
         fit: BoxFit.cover,
       ),
       Container(

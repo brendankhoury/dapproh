@@ -50,19 +50,10 @@ class UserDataController extends ChangeNotifier {
   void populateFeed() {
     Map<String, FollowedUser> following = ConfigBox.getPrivateUser().following;
     debugPrint("PopulateFeed called, $following");
-    SkynetClient client = SkynetClient();
     following.forEach((key, value) async {
-      SkynetUser followedUser = SkynetUser.fromId(value.userId);
       try {
         debugPrint("Followed user retieval\n");
-        List<String> rawFeedData = (await client.skydb.getFile(followedUser, ConfigBox.PUBLIC_FEED_KEY)).asString.toString().split(' ');
-        String followedUserIv = rawFeedData[0];
-        String encryptedFeedString = rawFeedData[1];
-        AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: value.followerKey);
-        String decryptedFeedString = encryption.gcm.decrypt(enc: encryptedFeedString, iv: followedUserIv);
-        debugPrint("encryptedFeedString: $encryptedFeedString");
-        debugPrint("decryptedFeedString: $decryptedFeedString");
-        PublicFeed recievedFeed = PublicFeed.fromJson(jsonDecode(decryptedFeedString));
+        final PublicFeed recievedFeed = await ConfigBox.getFeedFromUser(value);
         feed.addPosts(recievedFeed.posts);
         notifyListeners();
       } catch (e) {

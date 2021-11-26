@@ -1,3 +1,4 @@
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:dapproh/util/public_feed_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ class ProfilePage extends StatelessWidget {
           children: [
             OutlinedButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: PublicFeedUtil.getFriendCodeFromBox()));
+                  Clipboard.setData(ClipboardData(text: ConfigBox.getFriendCode()));
                 },
                 child: const Text(
                   "Copy friend code",
@@ -54,7 +55,7 @@ class ProfilePage extends StatelessWidget {
           child: ElevatedButton(
             child: const Text("Reset friend code"),
             onPressed: () {
-              PublicFeedUtil.resetFriendCode(context);
+              ConfigBox.resetFriendCode();
             },
             style: ElevatedButton.styleFrom(primary: Colors.deepPurple),
           ),
@@ -64,8 +65,15 @@ class ProfilePage extends StatelessWidget {
             child: const Text("Add friend from clipboard"),
             onPressed: () async {
               ClipboardData? data = await Clipboard.getData("text/plain");
-              if (data != null) {
+              if (data != null && data.text != null) {
                 debugPrint("ClipboardData: ${data.text}");
+                try {
+                  ConfigBox.addFriendFromCode(data.text!);
+                } catch (e) {
+                  debugPrint("Failure to add friend from clipboard: ${data.text} and the error was :::: $e");
+                }
+              } else {
+                debugPrint("No clipboard data");
               }
             },
             style: ElevatedButton.styleFrom(primary: Colors.lightBlue),

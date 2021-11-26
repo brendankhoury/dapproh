@@ -1,4 +1,5 @@
 import 'package:dapproh/controllers/user_data.dart';
+import 'package:dapproh/models/skynet_schema.dart';
 import 'package:dapproh/screens/home/feed.dart';
 import 'package:dapproh/screens/home/profile.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,7 +37,13 @@ class _HomePageState extends State<HomePage> {
       // navBarStyle: NavBarStyle.style14,
       // navBarStyle: NavBarStyle.style13,
       // navBarStyle: NavBarStyle.style9,
-      screens: const [FeedPage(), Text("This should not be shown Lol"), ProfilePage()],
+      screens: const [
+        FeedPage(),
+        Text("This should not be shown Lol"),
+        Text("This should not be shown Lol"),
+        Text("This should not be shown Lol"),
+        ProfilePage()
+      ],
       items: [
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.home),
@@ -45,14 +52,36 @@ class _HomePageState extends State<HomePage> {
           inactiveColorPrimary: CupertinoColors.systemGrey,
         ),
         PersistentBottomNavBarItem(
+            icon: const Icon(CupertinoIcons.refresh),
+            title: ("Refresh"),
+            activeColorPrimary: CupertinoColors.white,
+            inactiveColorPrimary: CupertinoColors.systemGrey,
+            onPressed: (pressedContext) async {
+              debugPrint("refreshed pressed");
+              UserDataController userData = Provider.of<UserDataController>(context, listen: false);
+              userData.notifyListeners(); // I think this should refresh :shrugging_man:
+            }),
+        PersistentBottomNavBarItem(
             icon: const Icon(CupertinoIcons.add),
             title: ("Post"),
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) async {
+              debugPrint("Post Called");
+              PublicFeed feed = ConfigBox.getOwnedFeed();
+              feed.addPost(Post(DateTime.now(), "The first post made on dapproh", "https://avatars.githubusercontent.com/u/53023770?v=4",
+                  "no encryption yet", "no pub key yet", "satoshi"));
+              ConfigBox.setOwnedFeed(feed, setSkynet: true);
+              // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
+            }),
+        PersistentBottomNavBarItem(
+            icon: const Icon(CupertinoIcons.delete),
+            title: ("Reset"),
+            activeColorPrimary: CupertinoColors.white,
+            inactiveColorPrimary: CupertinoColors.systemGrey,
+            onPressed: (pressedContext) async {
               String newMnemonic = await ConfigBox.regenerateMnemonic();
               debugPrint("Resetting Mnemonic $newMnemonic");
-              // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),
