@@ -5,10 +5,15 @@ import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
 import 'package:dapproh/models/skynet_schema.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:skynet/skynet.dart';
 import 'package:steel_crypt/steel_crypt.dart';
+import 'package:http/http.dart' as http;
+
+import '../secret.dart' as Secrets;
 
 class ConfigBox {
   ConfigBox() {
@@ -53,7 +58,6 @@ class ConfigBox {
       throw UnsupportedError("PrivateUserData is null in configBox");
     }
     String privateUserData = configBox.get("privateUser");
-    debugPrint("PrivateUserData: $privateUserData");
     return PrivateUser.fromJson(jsonDecode(privateUserData));
   }
 
@@ -125,11 +129,10 @@ class ConfigBox {
     String followedUserIv = rawFeedData[0];
     String encryptedFeedString = rawFeedData[1];
     AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: user.followerKey);
-    debugPrint(
-        "RawFeedData: $rawFeedData\nEncryptedFeedString: $encryptedFeedString\nFollowedUserKey: ${user.followerKey}\nReal key: ${getPrivateUser().encryptionKey}");
+    // debugPrint( "RawFeedData: $rawFeedData\nEncryptedFeedString: $encryptedFeedString\nFollowedUserKey: ${user.followerKey}\nReal key: ${getPrivateUser().encryptionKey}");
     String decryptedFeedString = encryption.gcm.decrypt(enc: encryptedFeedString, iv: followedUserIv);
-    debugPrint("encryptedFeedString: $encryptedFeedString");
-    debugPrint("decryptedFeedString: $decryptedFeedString");
+    // debugPrint("encryptedFeedString: $encryptedFeedString");
+    // debugPrint("decryptedFeedString: $decryptedFeedString");
     return PublicFeed.fromJson(jsonDecode(decryptedFeedString));
   }
 
@@ -165,6 +168,31 @@ class ConfigBox {
             type: "text/plain"));
     debugPrint("friendFileSet: $friendFileSet\nReset friend code finished");
     return friendFileSet;
+  }
+
+  static const String estuaryEndpoint = "https://shuttle-4.estuary.tech/content/add";
+  static final String estuaryAPIKey = Secrets.ESTUARY_API_KEY;
+  static Future<String> uploadToEstuary(String imagePath, String encryptionKey, String encryptionIv) async {
+    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) {
+      return "";
+    }
+    MultipartFile file = await MultipartFile.fromFile(image.path, filename: "upload.jpg");
+
+    FormData formData = FormData.fromMap({"data": await MultipartFile.fromFile(image.path)});
+    try {
+      var response = await Dio()
+          .post(estuaryEndpoint, data: formData, options: Options(method: "post", headers: {"Authorization": "Bearer $estuaryAPIKey"}))
+          .onError((error, stackTrace) {
+        debugPrint("$error\n$stackTrace");
+        throw UnimplementedError();
+      });
+      // debugPrint("Estuary Upload Response: $response\nEstuary Upload Response.body: ${response.data}");
+      return response.data["cid"];
+    } catch (e) {
+      debugPrint("Upload failed: $e");
+    }
+    return "";
   }
 
   static String getFriendKey() => configBox.get("friendKey");

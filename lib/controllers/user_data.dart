@@ -13,10 +13,11 @@ import 'package:steel_crypt/steel_crypt.dart';
 class UserDataController extends ChangeNotifier {
   late SkynetUser user;
   late String privateDataKey;
+  int feedAttempt = 0;
   // static const String PRIVATE_USER_IV_KEY = 'dapproh_private_user_iv';
   static const String PRIVATE_USER_FEED_KEY = 'dapproh_private_user_feed';
 
-  SkynetClient skynetClient = SkynetClient();
+  final SkynetClient skynetClient = SkynetClient();
   Feed feed = Feed();
 
   void initUser() async {
@@ -48,14 +49,19 @@ class UserDataController extends ChangeNotifier {
   }
 
   void populateFeed() {
+    feedAttempt++;
+    feed = Feed();
+    final int localAttempt = feedAttempt;
     Map<String, FollowedUser> following = ConfigBox.getPrivateUser().following;
-    debugPrint("PopulateFeed called, $following");
+    // debugPrint("PopulateFeed called, $following");
     following.forEach((key, value) async {
       try {
-        debugPrint("Followed user retieval\n");
+        // debugPrint("Followed user retieval\n");
         final PublicFeed recievedFeed = await ConfigBox.getFeedFromUser(value);
-        feed.addPosts(recievedFeed.posts);
-        notifyListeners();
+        if (localAttempt == feedAttempt) {
+          feed.addPosts(recievedFeed.posts);
+          notifyListeners();
+        }
       } catch (e) {
         debugPrint("Error retrieving followed user $e");
       }

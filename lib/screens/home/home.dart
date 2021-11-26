@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: (pressedContext) async {
               debugPrint("refreshed pressed");
               UserDataController userData = Provider.of<UserDataController>(context, listen: false);
-              userData.notifyListeners(); // I think this should refresh :shrugging_man:
+              userData.populateFeed(); // I think this should refresh :shrugging_man:
             }),
         PersistentBottomNavBarItem(
             icon: const Icon(CupertinoIcons.add),
@@ -67,11 +67,16 @@ class _HomePageState extends State<HomePage> {
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) async {
-              debugPrint("Post Called");
-              PublicFeed feed = ConfigBox.getOwnedFeed();
-              feed.addPost(Post(DateTime.now(), "The first post made on dapproh", "https://avatars.githubusercontent.com/u/53023770?v=4",
-                  "no encryption yet", "no pub key yet", "satoshi"));
-              ConfigBox.setOwnedFeed(feed, setSkynet: true);
+              debugPrint("Post called uploading to estuary");
+              String resultingCID = await ConfigBox.uploadToEstuary("Notdoneyet", "notdoneyet", "notdoneyet");
+              debugPrint("Resulting cid: $resultingCID");
+
+              // debugPrint("Post Called");
+              // PublicFeed feed = ConfigBox.getOwnedFeed();
+              // feed.addPost(Post(DateTime.now(), "The first post made on dapproh", "https://avatars.githubusercontent.com/u/53023770?v=4",
+              //     "no encryption yet", "no pub key yet", "satoshi"));
+              // ConfigBox.setOwnedFeed(feed, setSkynet: true);
+
               // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(

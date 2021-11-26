@@ -8,7 +8,7 @@ class FollowedUser {
   // String feedLocation; // Location of skynet, in the future users should be able to choose. Will  require an update to the friend code
   String followerKey; // Used to decrypt the feed
   String userId; // Used to find the feed on Skynet
-  // String nickname;
+  String? nickname;
 
   FollowedUser(this.followerKey, this.userId);
 
