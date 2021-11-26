@@ -20,7 +20,7 @@ class PostWidget extends StatelessWidget {
                 radius: 22,
               ),
               margin: const EdgeInsets.only(right: 5)),
-          Text(post.posterName, textScaleFactor: 1.5)
+          const Text("name not yet implemented", textScaleFactor: 1.5)
         ]),
         margin: const EdgeInsets.only(left: 10, bottom: 5),
       ),

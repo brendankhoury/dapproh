@@ -9,10 +9,11 @@ part of 'followed_user.dart';
 FollowedUser _$FollowedUserFromJson(Map<String, dynamic> json) => FollowedUser(
       json['followerKey'] as String,
       json['userId'] as String,
-    );
+    )..nickname = json['nickname'] as String?;
 
 Map<String, dynamic> _$FollowedUserToJson(FollowedUser instance) =>
     <String, dynamic>{
       'followerKey': instance.followerKey,
       'userId': instance.userId,
+      'nickname': instance.nickname,
     };

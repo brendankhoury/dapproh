@@ -1,3 +1,4 @@
+import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/models/skynet_schema.dart';
 import 'package:dapproh/screens/home/feed.dart';
@@ -67,9 +68,9 @@ class _HomePageState extends State<HomePage> {
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) async {
-              debugPrint("Post called uploading to estuary");
-              String resultingCID = await ConfigBox.uploadToEstuary("Notdoneyet", "notdoneyet", "notdoneyet");
-              debugPrint("Resulting cid: $resultingCID");
+              // debugPrint("Post called uploading to estuary");
+              // String resultingCID = await ConfigBox.uploadToEstuary("Notdoneyet", "notdoneyet", "notdoneyet");
+              // debugPrint("Resulting cid: $resultingCID");
 
               // debugPrint("Post Called");
               // PublicFeed feed = ConfigBox.getOwnedFeed();
@@ -77,7 +78,7 @@ class _HomePageState extends State<HomePage> {
               //     "no encryption yet", "no pub key yet", "satoshi"));
               // ConfigBox.setOwnedFeed(feed, setSkynet: true);
 
-              // Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
+              Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
         PersistentBottomNavBarItem(
             icon: const Icon(CupertinoIcons.delete),

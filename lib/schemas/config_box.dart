@@ -1,6 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
@@ -170,18 +172,43 @@ class ConfigBox {
     return friendFileSet;
   }
 
+  static Future<bool> postImage(String imagePath, String description) async {
+    final String encryptionKey = keyGen.genFortuna();
+    final String encryptionIv = keyGen.genDart();
+    final String uploadCID = await uploadToEstuary(imagePath, encryptionKey, encryptionIv);
+    if (uploadCID == '') {
+      throw Exception("Unable to upload file to estuary");
+      return false;
+    } else {
+      final Post newPost = Post(DateTime.now(), description, "https://dweb.link/ipfs/$uploadCID", encryptionKey, encryptionIv);
+      final PublicFeed ownedFeed = getOwnedFeed();
+      ownedFeed.addPost(newPost);
+      final bool skynetSet = await setOwnedFeed(ownedFeed, setSkynet: true);
+      debugPrint("Skynet Set with new post: $skynetSet");
+      return skynetSet;
+    }
+  }
+
   static const String estuaryEndpoint = "https://shuttle-4.estuary.tech/content/add";
   static final String estuaryAPIKey = Secrets.ESTUARY_API_KEY;
   static Future<String> uploadToEstuary(String imagePath, String encryptionKey, String encryptionIv) async {
-    XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image == null) {
-      return "";
-    }
-    MultipartFile file = await MultipartFile.fromFile(image.path, filename: "upload.jpg");
+    // XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    // if (image == null) {
+    //   return "";
+    // }
+    final File data = File(imagePath);
+    final Uint8List rawImageData = await data.readAsBytes();
+    final String strImageData = base64Encode(rawImageData);
 
-    FormData formData = FormData.fromMap({"data": await MultipartFile.fromFile(image.path)});
+    AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: encryptionKey);
+    final String encryptedImageData = encryption.gcm.encrypt(inp: strImageData, iv: encryptionIv);
+
+    // debugPrint("rawImageData: ${strImageData.substring(0, min(300, rawImageData.length))}");
+    final MultipartFile file = MultipartFile.fromString(encryptedImageData, filename: "upload.jpg");
+
+    final FormData formData = FormData.fromMap({"data": file});
     try {
-      var response = await Dio()
+      final Response response = await Dio()
           .post(estuaryEndpoint, data: formData, options: Options(method: "post", headers: {"Authorization": "Bearer $estuaryAPIKey"}))
           .onError((error, stackTrace) {
         debugPrint("$error\n$stackTrace");

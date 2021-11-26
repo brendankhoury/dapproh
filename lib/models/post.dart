@@ -10,16 +10,16 @@ class Post {
   String description;
   String postLink; // IPFS access data, for now an estuary link.
   String postKey;
-  String posterPubKey;
-  String posterName;
-  Post(this.datePosted, this.description, this.postLink, this.postKey, this.posterPubKey, this.posterName);
+  String postIv;
+  // String posterName;
+  Post(this.datePosted, this.description, this.postLink, this.postKey, this.postIv);
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
   // : datePosted = json['datePosted'],
   //   description = json['description'],
   //   postLink = json['postLink'],
   //   postKey = json['postKey'],
-  //   posterPubKey = json['posterPubKey'],
+  //   postIv = json['postIv'],
   //   posterName = json['posterName'];
 
   Map<String, dynamic> toJson() => _$PostToJson(this); //{
@@ -27,7 +27,7 @@ class Post {
   //   'description': description,
   //   'postLink': postLink,
   //   'postKey': postKey,
-  //   'posterPubKey': posterPubKey,
+  //   'postIv': postIv,
   //   'posterName': posterName
   // };
 }

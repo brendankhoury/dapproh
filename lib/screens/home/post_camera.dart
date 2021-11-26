@@ -87,33 +87,41 @@ class _PostCameraPageState extends State<PostCameraPage> {
               ),
               Expanded(
                   child: Center(
-                      child: ElevatedButton(
-                          onPressed: () {
-                            debugPrint("Taking picture");
-                            controller.pausePreview();
-                            controller.takePicture().then((imageFile) async {
-                              // ... I did not expect the following to get this long
-                              // FileImage tmp = FileImage(File(imageFile.path));
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: const [
+                    Icon(Icons.circle, color: Colors.white38, size: 80),
+                    Icon(Icons.circle, color: Colors.white, size: 65),
+                  ],
+                ),
+                // ElevatedButton(
+                //     onPressed: () {
+                //       debugPrint("Taking picture");
+                //       controller.pausePreview();
+                //       controller.takePicture().then((imageFile) async {
+                //         // ... I did not expect the following to get this long
+                //         // FileImage tmp = FileImage(File(imageFile.path));
 
-                              // debugPrint("pre crop");
-                              // ImageCrop.cropImage(
-                              //         file: File(imageFile.path),
-                              //         area: Rect.fromCenter(
-                              //             center: Offset(tmp.image.width / 2, tmp.height / 2),
-                              //             width: tmp.width.toDouble() - 1,
-                              //             height: image.width.toDouble() - 1))
-                              //     .then((croppedImage) {
-                              //   debugPrint("post crop");
-                              //   NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
-                              //   navigation.setImagePath(croppedImage.path);
-                              //   navigation.changeScreen('/home/post_camera/post_confirm');
-                              // });
-                            });
-                          },
-                          child: const Icon(
-                            Icons.camera,
-                            size: 55,
-                          )))),
+                //         // debugPrint("pre crop");
+                //         // ImageCrop.cropImage(
+                //         //         file: File(imageFile.path),
+                //         //         area: Rect.fromCenter(
+                //         //             center: Offset(tmp.image.width / 2, tmp.height / 2),
+                //         //             width: tmp.width.toDouble() - 1,
+                //         //             height: image.width.toDouble() - 1))
+                //         //     .then((croppedImage) {
+                //         //   debugPrint("post crop");
+                //         //   NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
+                //         //   navigation.setImagePath(croppedImage.path);
+                //         //   navigation.changeScreen('/home/post_camera/post_confirm');
+                //         // });
+                //       });
+                //     },
+                //     child: const Icon(
+                //       Icons.camera,
+                //       size: 55,
+                //     ))
+              )),
             ]))));
   }
 }

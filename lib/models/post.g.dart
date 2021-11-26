@@ -11,8 +11,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post(
       json['description'] as String,
       json['postLink'] as String,
       json['postKey'] as String,
-      json['posterPubKey'] as String,
-      json['posterName'] as String,
+      json['postIv'] as String,
     );
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
@@ -20,6 +19,5 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'description': instance.description,
       'postLink': instance.postLink,
       'postKey': instance.postKey,
-      'posterPubKey': instance.posterPubKey,
-      'posterName': instance.posterName,
+      'postIv': instance.postIv,
     };
