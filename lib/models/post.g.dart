@@ -12,7 +12,7 @@ Post _$PostFromJson(Map<String, dynamic> json) => Post(
       json['postLink'] as String,
       json['postKey'] as String,
       json['postIv'] as String,
-    );
+    )..posterName = json['posterName'] as String?;
 
 Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'datePosted': instance.datePosted.toIso8601String(),
@@ -20,4 +20,5 @@ Map<String, dynamic> _$PostToJson(Post instance) => <String, dynamic>{
       'postLink': instance.postLink,
       'postKey': instance.postKey,
       'postIv': instance.postIv,
+      'posterName': instance.posterName,
     };

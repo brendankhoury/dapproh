@@ -130,8 +130,6 @@ class _PostCameraPageState extends State<PostCameraPage> {
                           } catch (e) {
                             debugPrint("Error selecting image $e");
                           }
-
-                          // throw UnimplementedError("Gallery not yet implemented");
                         },
                         child: const Icon(Icons.photo)),
                     margin: const EdgeInsets.only(right: 15),

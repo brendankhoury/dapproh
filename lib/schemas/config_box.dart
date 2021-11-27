@@ -98,6 +98,18 @@ class ConfigBox {
     return true;
   }
 
+  static Future<bool> setProfilePicture(String imagePath) async {
+    String newIv = keyGen.genDart();
+    String newKey = keyGen.genFortuna();
+
+    String newImagePath = await uploadToEstuary(imagePath, newKey, newIv);
+    if (newImagePath == '') return false;
+    PublicFeed ownedFeed = getOwnedFeed();
+    ownedFeed.profilePicture = "https://dweb.link/ipfs/$newImagePath";
+    ownedFeed.profilePictureKeyAndIv = newKey + ' ' + newIv;
+    return await setOwnedFeed(ownedFeed, setSkynet: true);
+  }
+
   static Future<bool> addFriendFromCode(String friendCode) async {
     // Friend Key construction:     return userId + ' ' + friendKey + ' ' + friendIv;
     final List<String> splitData = friendCode.split(" ");

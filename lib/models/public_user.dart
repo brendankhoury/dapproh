@@ -7,6 +7,8 @@ part 'public_user.g.dart';
 class PublicFeed {
   List<Post> posts;
   String name;
+  String? profilePicture;
+  String? profilePictureKeyAndIv;
 
   PublicFeed(this.posts, this.name);
 

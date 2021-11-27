@@ -62,6 +62,8 @@ class UserDataController extends ChangeNotifier {
           // TODO: improve.
           for (Post post in recievedFeed.posts) {
             post.posterName = recievedFeed.name;
+            post.posterProfilePicture = recievedFeed.profilePicture;
+            post.posterProfilePictureKeyAndIv = recievedFeed.profilePictureKeyAndIv;
           }
           feed.addPosts(recievedFeed.posts);
           notifyListeners();

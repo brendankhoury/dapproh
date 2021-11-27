@@ -42,10 +42,21 @@ class _PostWidgetState extends State<PostWidget> {
         // height: imageWidget != null ? imageWidget!.height : null,
         child: Row(children: [
           Container(
-              child: const CircleAvatar(
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage("https://picsum.photos/100"), //todo: implement the post avatar thingy
-                ),
+              child: CircleAvatar(
+                child: widget.post.posterProfilePicture == null
+                    ? null
+                    : FutureBuilder(
+                        future: ConfigBox.retrieveImage(widget.post.posterProfilePicture!, widget.post.posterProfilePictureKeyAndIv!.split(' ')[0],
+                            widget.post.posterProfilePictureKeyAndIv!.split(' ')[1]),
+                        builder: (BuildContext context, AsyncSnapshot<Uint8List> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.done) {
+                            return CircleAvatar(
+                              backgroundImage: Image.memory(snapshot.data!).image, //todo: implement the post avatar thingy
+                            );
+                          }
+                          return Container();
+                        },
+                      ),
                 backgroundColor: CupertinoColors.white,
                 radius: 22,
               ),
@@ -86,7 +97,7 @@ class _PostWidgetState extends State<PostWidget> {
               return ValueListenableBuilder(
                   valueListenable: Hive.box("cache").listenable(),
                   builder: (context, box, _) {
-                    debugPrint("HEIGHT IS BAD: ${(ConfigBox.getImageHeight(widget.post.postLink) ?? 400)}");
+                    // debugPrint("HEIGHT IS BAD: ${(ConfigBox.getImageHeight(widget.post.postLink) ?? 400)}");
                     return SizedBox(
                       height: 1.0 * (ConfigBox.getImageHeight(widget.post.postLink) ?? 400),
                       child: const Center(

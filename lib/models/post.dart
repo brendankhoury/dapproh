@@ -12,6 +12,8 @@ class Post {
   String postKey;
   String postIv;
   String? posterName;
+  String? posterProfilePicture;
+  String? posterProfilePictureKeyAndIv;
   Post(this.datePosted, this.description, this.postLink, this.postKey, this.postIv);
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);
