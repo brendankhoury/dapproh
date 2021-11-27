@@ -1,3 +1,4 @@
 {
-    "cSpell.words": ["cupertino", "Cupertino", "dapproh", "Schyler", "skynet"]
+    "cSpell.words": ["cupertino", "Cupertino", "dapproh", "Schyler", "skynet"],
+    "cSpell.ignoreWords": ["pinenacl"]
 }

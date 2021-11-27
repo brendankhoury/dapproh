@@ -76,7 +76,7 @@ List<Page> getPages(context) {
         pages.add(const MaterialPage(child: PostCameraPage()));
         break;
       case 'post_confirm':
-        pages.add(const MaterialPage(child: PostConfirmationPage()));
+        pages.add(MaterialPage(child: PostConfirmationPage()));
         break;
       case '':
         break;

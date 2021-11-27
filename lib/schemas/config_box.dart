@@ -222,6 +222,16 @@ class ConfigBox {
     return "";
   }
 
+  static Future<Uint8List> retrieveImage(String imageDataURL, String encryptionKey, String encryptionIv) async {
+    final Response response = await Dio().get(imageDataURL);
+    // debugPrint("Image response: $response");
+    final AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: encryptionKey);
+    String decryptedImageData = encryption.gcm.decrypt(enc: response.data, iv: encryptionIv);
+    Uint8List rawDecryptedImageData = base64Decode(decryptedImageData);
+    return rawDecryptedImageData;
+    // throw UnimplementedError("retrieveImage not yet implemented");
+  }
+
   static String getFriendKey() => configBox.get("friendKey");
   static void setFriendKey(String key) => configBox.put("friendKey", key);
 
