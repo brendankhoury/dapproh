@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/schemas/config_box.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -40,8 +41,10 @@ class PostConfirmationPage extends StatelessWidget {
               child: SizedBox(
                   child: ElevatedButton(
                       onPressed: () {
+                        navigation.setPostDescription(descriptionController.text);
                         debugPrint("ImagePath: ${navigation.imagePath} and description: ${descriptionController.text}");
-                        ConfigBox.postImage(navigation.imagePath, descriptionController.text);
+                        navigation.changeScreen('/home/post_camera/post_confirm/uploading');
+                        // ConfigBox.postImage(navigation.imagePath, descriptionController.text);
                       },
                       child: const Icon(Icons.upload)),
                   width: double.infinity),
@@ -51,9 +54,12 @@ class PostConfirmationPage extends StatelessWidget {
               child: SizedBox(
                   child: TextButton(
                       onPressed: () {
-                        throw UnimplementedError("Cancel button not yet implemented");
+                        NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
+                        navigation.changeScreen('/home/post_camera');
                       },
-                      child: const Text("Cancel")),
+                      child: const Text(
+                        "Cancel",
+                      )),
                   width: double.infinity),
               margin: const EdgeInsets.only(left: 15, right: 15, top: 0),
             ),

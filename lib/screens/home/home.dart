@@ -5,6 +5,7 @@ import 'package:dapproh/screens/home/feed.dart';
 import 'package:dapproh/screens/home/profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import '../../schemas/config_box.dart';
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> {
       // navBarStyle: NavBarStyle.style14,
       // navBarStyle: NavBarStyle.style13,
       // navBarStyle: NavBarStyle.style9,
-      screens: const [
+      screens: [
         FeedPage(),
         Text("This should not be shown Lol"),
         Text("This should not be shown Lol"),
@@ -86,8 +87,11 @@ class _HomePageState extends State<HomePage> {
             activeColorPrimary: CupertinoColors.white,
             inactiveColorPrimary: CupertinoColors.systemGrey,
             onPressed: (pressedContext) async {
-              String newMnemonic = await ConfigBox.regenerateMnemonic();
-              debugPrint("Resetting Mnemonic $newMnemonic");
+              debugPrint("resetting cache");
+              Hive.box("cache").clear().then((value) => debugPrint("Cache reset"));
+
+              // String newMnemonic = await ConfigBox.regenerateMnemonic();
+              // debugPrint("Resetting Mnemonic $newMnemonic");
             }),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),

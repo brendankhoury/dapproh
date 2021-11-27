@@ -6,6 +6,6 @@ class Feed {
   Feed();
   void addPosts(List<Post> posts) {
     timelineOfPosts.insertAll(timelineOfPosts.length, posts);
-    timelineOfPosts.sort((Post a, Post b) => a.datePosted.compareTo(b.datePosted));
+    timelineOfPosts.sort((Post a, Post b) => -a.datePosted.compareTo(b.datePosted));
   }
 }

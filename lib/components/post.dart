@@ -15,12 +15,12 @@ class PostWidget extends StatefulWidget {
 
 class _PostWidgetState extends State<PostWidget> {
   Uint8List? imageBytes;
-
+  Image? imageWidget;
   @override
   void initState() {
     super.initState();
     ConfigBox.retrieveImage(widget.post.postLink, widget.post.postKey, widget.post.postIv).then((value) => setState(() {
-          imageBytes = value;
+          imageWidget = Image.memory(value);
         }));
   }
 

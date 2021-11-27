@@ -40,6 +40,7 @@ class _FeedPageState extends State<FeedPage> {
           return PostWidget(feed.timelineOfPosts[index]);
         },
         itemCount: feed.timelineOfPosts.length,
+        cacheExtent: 1000,
       );
     }
   }

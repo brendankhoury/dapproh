@@ -3,6 +3,7 @@ import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/screens/home/home.dart';
 import 'package:dapproh/screens/home/post_camera.dart';
 import 'package:dapproh/screens/home/post_confirmation.dart';
+import 'package:dapproh/screens/home/uploading_page.dart';
 import 'package:dapproh/screens/onboarding/confirm.dart';
 import 'package:dapproh/screens/onboarding/create.dart';
 import 'package:dapproh/screens/onboarding/restore.dart';
@@ -77,6 +78,9 @@ List<Page> getPages(context) {
         break;
       case 'post_confirm':
         pages.add(MaterialPage(child: PostConfirmationPage()));
+        break;
+      case 'uploading':
+        pages.add(const MaterialPage(child: UploadingPage()));
         break;
       case '':
         break;

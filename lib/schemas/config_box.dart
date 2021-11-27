@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
 import 'package:dapproh/models/skynet_schema.dart';
+import 'package:dapproh/schemas/cache_box.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -26,6 +27,8 @@ class ConfigBox {
   static const String FRIEND_FILE_KEY = 'dapproh_friend_file';
 
   static final Box configBox = Hive.box("configuration");
+  static final Box cacheBox = Hive.box("cache");
+
   static final SkynetClient client = SkynetClient();
   static final CryptKey keyGen = CryptKey();
 
@@ -73,7 +76,12 @@ class ConfigBox {
     return await SkynetUser.fromMySkySeedRaw(getMnemonicSeed());
   }
 
-  static PublicFeed getOwnedFeed() => PublicFeed.fromJson(jsonDecode(configBox.get("ownedFeed")));
+  static PublicFeed getOwnedFeed() {
+    PublicFeed ownedFeed = PublicFeed.fromJson(jsonDecode(configBox.get("ownedFeed")));
+    debugPrint("${jsonEncode(ownedFeed.toJson())}");
+    return ownedFeed;
+  }
+
   static Future<bool> setOwnedFeed(PublicFeed feed, {required bool setSkynet}) async {
     debugPrint("SettingOwnedFeed, updatingSkynet: $setSkynet");
     configBox.put("ownedFeed", jsonEncode(feed.toJson()));
@@ -223,11 +231,20 @@ class ConfigBox {
   }
 
   static Future<Uint8List> retrieveImage(String imageDataURL, String encryptionKey, String encryptionIv) async {
+    if (cacheBox.containsKey(imageDataURL)) {
+      debugPrint("returning image from cache");
+      return base64Decode(cacheBox.get(imageDataURL));
+    }
+    debugPrint("image not in cache, retrieving");
+
     final Response response = await Dio().get(imageDataURL);
+    // final String responseData = await CacheBox.get(imageDataURL);
+
     // debugPrint("Image response: $response");
     final AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: encryptionKey);
     String decryptedImageData = encryption.gcm.decrypt(enc: response.data, iv: encryptionIv);
     Uint8List rawDecryptedImageData = base64Decode(decryptedImageData);
+    cacheBox.put(imageDataURL, base64Encode(rawDecryptedImageData));
     return rawDecryptedImageData;
     // throw UnimplementedError("retrieveImage not yet implemented");
   }

@@ -54,8 +54,8 @@ class _PostCameraPageState extends State<PostCameraPage> {
   Widget build(BuildContext context) {
     var previewSize = MediaQuery.of(context).size.width;
     if (!initialized) {
-      return Center(
-        child: Text("Not yet initialized"),
+      return const Scaffold(
+        body: Text("Not yet initialized"),
       );
     }
     return Scaffold(
@@ -91,7 +91,14 @@ class _PostCameraPageState extends State<PostCameraPage> {
                   child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(child: TextButton(onPressed: () {}, child: const Text("Cancel")), margin: const EdgeInsets.only(left: 15)),
+                  Container(
+                      child: TextButton(
+                          onPressed: () {
+                            NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
+                            navigation.changeScreen('/home');
+                          },
+                          child: const Text("Cancel")),
+                      margin: const EdgeInsets.only(left: 15)),
                   InkWell(
                       onTap: () {
                         // controller.pausePreview();
