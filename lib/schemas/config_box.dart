@@ -2,21 +2,17 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
 import 'package:dapproh/models/skynet_schema.dart';
-import 'package:dapproh/schemas/cache_box.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:skynet/skynet.dart';
 import 'package:steel_crypt/steel_crypt.dart';
-import 'package:http/http.dart' as http;
 
-import '../secret.dart' as Secrets;
+import '../secret.dart' as secrets;
 
 class ConfigBox {
   ConfigBox() {
@@ -198,7 +194,7 @@ class ConfigBox {
   }
 
   static const String estuaryEndpoint = "https://shuttle-4.estuary.tech/content/add";
-  static final String estuaryAPIKey = Secrets.ESTUARY_API_KEY;
+  static final String estuaryAPIKey = secrets.ESTUARY_API_KEY;
   static Future<String> uploadToEstuary(String imagePath, String encryptionKey, String encryptionIv) async {
     // XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
     // if (image == null) {
@@ -233,7 +229,7 @@ class ConfigBox {
   static Future<Uint8List> retrieveImage(String imageDataURL, String encryptionKey, String encryptionIv) async {
     if (cacheBox.containsKey(imageDataURL)) {
       debugPrint("returning image from cache");
-      return base64Decode(cacheBox.get(imageDataURL));
+      return cacheBox.get(imageDataURL);
     }
     debugPrint("image not in cache, retrieving");
 
@@ -244,9 +240,15 @@ class ConfigBox {
     final AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: encryptionKey);
     String decryptedImageData = encryption.gcm.decrypt(enc: response.data, iv: encryptionIv);
     Uint8List rawDecryptedImageData = base64Decode(decryptedImageData);
-    cacheBox.put(imageDataURL, base64Encode(rawDecryptedImageData));
+    cacheBox.put(imageDataURL, rawDecryptedImageData);
     return rawDecryptedImageData;
     // throw UnimplementedError("retrieveImage not yet implemented");
+  }
+
+  static double? getImageHeight(String imageDataUrl) {
+    debugPrint("Image height: ${cacheBox.get("height:$imageDataUrl")}");
+    if (cacheBox.containsKey("height:$imageDataUrl")) return 1.0 * cacheBox.get("height:$imageDataUrl");
+    return null;
   }
 
   static String getFriendKey() => configBox.get("friendKey");

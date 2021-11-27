@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:dapproh/models/post.dart';
@@ -14,20 +15,28 @@ class PostWidget extends StatefulWidget {
 }
 
 class _PostWidgetState extends State<PostWidget> {
-  Uint8List? imageBytes;
-  Image? imageWidget;
+  // Image? imageWidget;
+  // double? height;
   @override
   void initState() {
     super.initState();
-    ConfigBox.retrieveImage(widget.post.postLink, widget.post.postKey, widget.post.postIv).then((value) => setState(() {
-          imageWidget = Image.memory(value);
-        }));
+    // ConfigBox.retrieveImage(widget.post.postLink, widget.post.postKey, widget.post.postIv).then((value) {
+    //   setState(() {
+    //     imageWidget = Image.memory(
+    //       value,
+    //       fit: BoxFit.cover,
+    //     );
+    //     height = imageWidget!.height;
+    //     ConfigBox.cacheBox.put("height:${widget.post.postLink}", height);
+    //   });
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
+        // height: imageWidget != null ? imageWidget!.height : null,
         child: Row(children: [
           Container(
               child: const CircleAvatar(
@@ -42,11 +51,48 @@ class _PostWidgetState extends State<PostWidget> {
         ]),
         margin: const EdgeInsets.only(left: 10, bottom: 5),
       ),
-      if (imageBytes != null)
-        Image.memory(
-          imageBytes!, //NetworkImage(post.postLink), //todo: implement the post avatar thingy
-          fit: BoxFit.cover,
-        ),
+      // imageWidget != null
+      //     ? imageWidget!
+      //     : Container(
+      //         height: height,
+      //       ),\
+      FutureBuilder(
+          future: ConfigBox.retrieveImage(widget.post.postLink, widget.post.postKey, widget.post.postIv),
+          builder: (context, AsyncSnapshot<Uint8List> snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              Image tmpWidget = Image.memory(
+                snapshot.data!,
+                fit: BoxFit.contain,
+              );
+              if (ConfigBox.getImageHeight(widget.post.postLink) == null) {
+                Completer<Image> completer = Completer<Image>();
+                tmpWidget.image.resolve(const ImageConfiguration()).addListener(ImageStreamListener((ImageInfo info, bool _) {
+                  // debugPrint("ImageInfo: ${info.image.height} ${info.scale} ${info.image.height * info.scale} ${tmpWidget.height}");
+                  try {
+                    double ratio = MediaQuery.of(context).size.width / info.image.width;
+                    // debugPrint("${info.image.height * ratio}");
+                    ConfigBox.cacheBox.put("height:${widget.post.postLink}", info.image.height * ratio);
+                  } catch (e) {
+                    debugPrint("Error calculating image widget height $e");
+                  }
+                }));
+              }
+
+              // debugPrint("WidgetHeight: ${tmpWidget.}");
+              return tmpWidget;
+            } else {
+              return SizedBox(
+                height: 1.0 * (ConfigBox.getImageHeight(widget.post.postLink) ?? 400),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+          }),
+      // Image.memory(
+      //   imageBytes!, //NetworkImage(post.postLink), //todo: implement the post avatar thingy
+      //   fit: BoxFit.cover,
+      // ),
       Container(
         child: Text(widget.post.description),
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
