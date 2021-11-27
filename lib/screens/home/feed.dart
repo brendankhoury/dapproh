@@ -36,14 +36,13 @@ class _FeedPageState extends State<FeedPage> {
       );
     } else {
       return RefreshIndicator(
+          // child: ListView(cacheExtent: 100000, children: feed.timelineOfPosts.map((e) => PostWidget(e)).toList()),
           child: ListView.builder(
-            controller: ScrollController(),
-            addAutomaticKeepAlives: true,
+            cacheExtent: 100000,
             itemBuilder: (context, index) {
               return PostWidget(feed.timelineOfPosts[index]);
             },
             itemCount: feed.timelineOfPosts.length,
-            cacheExtent: 1000,
           ),
           onRefresh: () async {
             controller.populateFeed();

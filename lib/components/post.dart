@@ -5,6 +5,8 @@ import 'package:dapproh/models/post.dart';
 import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class PostWidget extends StatefulWidget {
   final Post post;
@@ -81,12 +83,17 @@ class _PostWidgetState extends State<PostWidget> {
               // debugPrint("WidgetHeight: ${tmpWidget.}");
               return tmpWidget;
             } else {
-              return SizedBox(
-                height: 1.0 * (ConfigBox.getImageHeight(widget.post.postLink) ?? 400),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              );
+              return ValueListenableBuilder(
+                  valueListenable: Hive.box("cache").listenable(),
+                  builder: (context, box, _) {
+                    debugPrint("HEIGHT IS BAD: ${(ConfigBox.getImageHeight(widget.post.postLink) ?? 400)}");
+                    return SizedBox(
+                      height: 1.0 * (ConfigBox.getImageHeight(widget.post.postLink) ?? 400),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  });
             }
           }),
       // Image.memory(
