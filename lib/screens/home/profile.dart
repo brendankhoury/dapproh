@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dapproh/components/remote_image.dart';
+import 'package:dapproh/controllers/navigation.dart';
 import 'package:dapproh/models/public_user.dart';
 import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -26,17 +28,6 @@ class ProfilePage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  // Container(
-                  //   child: const CircleAvatar(
-                  //     radius: 40,
-                  //     backgroundColor: CupertinoColors.white,
-                  //     child: CircleAvatar(
-                  //       radius: 38,
-                  //       backgroundImage: NetworkImage("https://picsum.photos/100"),
-                  //     ),
-                  //   ),
-                  //   margin: const EdgeInsets.all(10),
-                  // ),
                   InkWell(
                     child: Container(
                         child: CircleAvatar(
@@ -73,15 +64,30 @@ class ProfilePage extends StatelessWidget {
                     },
                   ),
                   Flexible(
-                      child: TextField(
-                    controller: userNameController,
-                    onSubmitted: (String data) {
-                      // update profile data
-                      PublicFeed ownedFeed = ConfigBox.getOwnedFeed();
-                      ownedFeed.name = data;
-                      ConfigBox.setOwnedFeed(ownedFeed, setSkynet: true);
+                      child: Container(
+                    child: TextField(
+                      decoration: const InputDecoration(border: InputBorder.none),
+                      controller: userNameController,
+                      onSubmitted: (String data) {
+                        // update profile data
+                        PublicFeed ownedFeed = ConfigBox.getOwnedFeed();
+                        ownedFeed.name = data;
+                        ConfigBox.setOwnedFeed(ownedFeed, setSkynet: true);
+                      },
+                    ),
+                    margin: const EdgeInsets.only(right: 12),
+                  )),
+                  InkWell(
+                    child: Container(
+                        child: Column(
+                          children: const [Icon(Icons.person), Text("Following")],
+                        ),
+                        margin: const EdgeInsets.only(right: 10)),
+                    onTap: () {
+                      NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
+                      navigation.changeScreen("/home/following");
                     },
-                  ))
+                  ),
                 ],
               ),
               Row(
@@ -141,9 +147,9 @@ class ProfilePage extends StatelessWidget {
                 ),
                 style: TextButton.styleFrom(primary: CupertinoColors.white),
               )),
-              Column(
-                children: ConfigBox.getPrivateUser().following.values.map((e) => Text(e.userId)).toList(),
-              ),
+              // Column(
+              //   children: ConfigBox.getPrivateUser().following.values.map((e) => Text(e.userId)).toList(),
+              // ),
               Expanded(
                   child: GridView.count(
                       crossAxisCount: 3,
