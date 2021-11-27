@@ -27,10 +27,9 @@ class _UploadingPageState extends State<UploadingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-        body: Center(
-      child: LinearProgressIndicator(),
-    ));
+    return Scaffold(
+        body:
+            Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: const [Text("Uploading image"), LinearProgressIndicator()])));
   }
 }
 

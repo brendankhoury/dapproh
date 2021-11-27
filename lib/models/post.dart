@@ -11,7 +11,7 @@ class Post {
   String postLink; // IPFS access data, for now an estuary link.
   String postKey;
   String postIv;
-  // String posterName;
+  String? posterName;
   Post(this.datePosted, this.description, this.postLink, this.postKey, this.postIv);
 
   factory Post.fromJson(Map<String, dynamic> json) => _$PostFromJson(json);

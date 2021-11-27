@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 class PostWidget extends StatefulWidget {
   final Post post;
+
   const PostWidget(this.post, {Key? key}) : super(key: key);
 
   @override
@@ -47,7 +48,7 @@ class _PostWidgetState extends State<PostWidget> {
                 radius: 22,
               ),
               margin: const EdgeInsets.only(right: 5)),
-          const Text("name not yet implemented", textScaleFactor: 1.5)
+          Text("${widget.post.posterName}", textScaleFactor: 1.5)
         ]),
         margin: const EdgeInsets.only(left: 10, bottom: 5),
       ),
@@ -65,7 +66,6 @@ class _PostWidgetState extends State<PostWidget> {
                 fit: BoxFit.contain,
               );
               if (ConfigBox.getImageHeight(widget.post.postLink) == null) {
-                Completer<Image> completer = Completer<Image>();
                 tmpWidget.image.resolve(const ImageConfiguration()).addListener(ImageStreamListener((ImageInfo info, bool _) {
                   // debugPrint("ImageInfo: ${info.image.height} ${info.scale} ${info.image.height * info.scale} ${tmpWidget.height}");
                   try {

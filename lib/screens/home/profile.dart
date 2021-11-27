@@ -1,4 +1,5 @@
 import 'package:dapproh/components/remote_image.dart';
+import 'package:dapproh/models/public_user.dart';
 import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController userNameController = TextEditingController(text: ConfigBox.getOwnedFeed().name);
+
     return ValueListenableBuilder(
         valueListenable: Hive.box("configuration").listenable(),
         builder: (context, value, child) => SafeArea(
@@ -30,11 +32,16 @@ class ProfilePage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.all(10),
                     ),
-                    // const Text(
-                    //   "Profile Name",
-                    //   textScaleFactor: 1.5,
-                    // )
-                    Flexible(child: TextField(controller: userNameController))
+                    Flexible(
+                        child: TextField(
+                      controller: userNameController,
+                      onSubmitted: (String data) {
+                        // update profile data
+                        PublicFeed ownedFeed = ConfigBox.getOwnedFeed();
+                        ownedFeed.name = data;
+                        ConfigBox.setOwnedFeed(ownedFeed, setSkynet: true);
+                      },
+                    ))
                   ],
                 ),
                 Row(
@@ -100,8 +107,8 @@ class ProfilePage extends StatelessWidget {
                 Expanded(
                     child: GridView.count(
                         crossAxisCount: 3,
-                        children:
-                            List.generate(ConfigBox.getOwnedFeed().posts.length, (index) => RemoteImage(ConfigBox.getOwnedFeed().posts[index]))))
+                        children: List.generate(ConfigBox.getOwnedFeed().posts.length,
+                            (index) => RemoteImage(ConfigBox.getOwnedFeed().posts[ConfigBox.getOwnedFeed().posts.length - 1 - index]))))
               ],
               crossAxisAlignment: CrossAxisAlignment.start,
             ))); //);

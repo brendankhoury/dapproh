@@ -59,6 +59,10 @@ class UserDataController extends ChangeNotifier {
         // debugPrint("Followed user retieval\n");
         final PublicFeed recievedFeed = await ConfigBox.getFeedFromUser(value);
         if (localAttempt == feedAttempt) {
+          // TODO: improve.
+          for (Post post in recievedFeed.posts) {
+            post.posterName = recievedFeed.name;
+          }
           feed.addPosts(recievedFeed.posts);
           notifyListeners();
         }

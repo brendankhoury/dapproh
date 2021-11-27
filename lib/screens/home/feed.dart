@@ -35,13 +35,19 @@ class _FeedPageState extends State<FeedPage> {
         body: Center(child: Text("No posts found yet...")),
       );
     } else {
-      return ListView.builder(
-        itemBuilder: (context, index) {
-          return PostWidget(feed.timelineOfPosts[index]);
-        },
-        itemCount: feed.timelineOfPosts.length,
-        cacheExtent: 1000,
-      );
+      return RefreshIndicator(
+          child: ListView.builder(
+            controller: ScrollController(),
+            addAutomaticKeepAlives: true,
+            itemBuilder: (context, index) {
+              return PostWidget(feed.timelineOfPosts[index]);
+            },
+            itemCount: feed.timelineOfPosts.length,
+            cacheExtent: 1000,
+          ),
+          onRefresh: () async {
+            controller.populateFeed();
+          });
     }
   }
 }

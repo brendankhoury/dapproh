@@ -1,5 +1,4 @@
 import 'package:dapproh/models/post.dart';
-import 'dart:collection';
 
 class Feed {
   List<Post> timelineOfPosts = [];

@@ -119,13 +119,18 @@ class _PostCameraPageState extends State<PostCameraPage> {
                   Container(
                     child: ElevatedButton(
                         onPressed: () async {
-                          NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
-                          XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
-                          if (image == null) {
-                            return;
+                          try {
+                            NavigationController navigation = Provider.of<NavigationController>(context, listen: false);
+                            XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                            if (image == null) {
+                              return;
+                            }
+                            navigation.setImagePath(image.path);
+                            navigation.changeScreen('/home/post_camera/post_confirm');
+                          } catch (e) {
+                            debugPrint("Error selecting image $e");
                           }
-                          navigation.setImagePath(image.path);
-                          navigation.changeScreen('/home/post_camera/post_confirm');
+
                           // throw UnimplementedError("Gallery not yet implemented");
                         },
                         child: const Icon(Icons.photo)),

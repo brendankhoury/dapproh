@@ -74,12 +74,11 @@ class ConfigBox {
 
   static PublicFeed getOwnedFeed() {
     PublicFeed ownedFeed = PublicFeed.fromJson(jsonDecode(configBox.get("ownedFeed")));
-    debugPrint("${jsonEncode(ownedFeed.toJson())}");
     return ownedFeed;
   }
 
   static Future<bool> setOwnedFeed(PublicFeed feed, {required bool setSkynet}) async {
-    debugPrint("SettingOwnedFeed, updatingSkynet: $setSkynet");
+    // debugPrint("SettingOwnedFeed, updatingSkynet: $setSkynet");
     configBox.put("ownedFeed", jsonEncode(feed.toJson()));
     if (setSkynet) {
       String newIv = keyGen.genDart();
@@ -228,10 +227,10 @@ class ConfigBox {
 
   static Future<Uint8List> retrieveImage(String imageDataURL, String encryptionKey, String encryptionIv) async {
     if (cacheBox.containsKey(imageDataURL)) {
-      debugPrint("returning image from cache");
+      // debugPrint("returning image from cache");
       return cacheBox.get(imageDataURL);
     }
-    debugPrint("image not in cache, retrieving");
+    // debugPrint("image not in cache, retrieving");
 
     final Response response = await Dio().get(imageDataURL);
     // final String responseData = await CacheBox.get(imageDataURL);
@@ -246,7 +245,6 @@ class ConfigBox {
   }
 
   static double? getImageHeight(String imageDataUrl) {
-    debugPrint("Image height: ${cacheBox.get("height:$imageDataUrl")}");
     if (cacheBox.containsKey("height:$imageDataUrl")) return 1.0 * cacheBox.get("height:$imageDataUrl");
     return null;
   }
