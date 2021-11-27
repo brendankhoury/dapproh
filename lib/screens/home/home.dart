@@ -41,9 +41,9 @@ class _HomePageState extends State<HomePage> {
       // navBarStyle: NavBarStyle.style9,
       screens: [
         FeedPage(),
+        // Text("This should not be shown Lol"),
         Text("This should not be shown Lol"),
-        Text("This should not be shown Lol"),
-        Text("This should not be shown Lol"),
+        // Text("This should not be shown Lol"),
         ProfilePage()
       ],
       items: [
@@ -53,16 +53,16 @@ class _HomePageState extends State<HomePage> {
           activeColorPrimary: CupertinoColors.white,
           inactiveColorPrimary: CupertinoColors.systemGrey,
         ),
-        PersistentBottomNavBarItem(
-            icon: const Icon(CupertinoIcons.refresh),
-            title: ("Refresh"),
-            activeColorPrimary: CupertinoColors.white,
-            inactiveColorPrimary: CupertinoColors.systemGrey,
-            onPressed: (pressedContext) async {
-              debugPrint("refreshed pressed");
-              UserDataController userData = Provider.of<UserDataController>(context, listen: false);
-              userData.populateFeed(); // I think this should refresh :shrugging_man:
-            }),
+        // PersistentBottomNavBarItem(
+        //     icon: const Icon(CupertinoIcons.refresh),
+        //     title: ("Refresh"),
+        //     activeColorPrimary: CupertinoColors.white,
+        //     inactiveColorPrimary: CupertinoColors.systemGrey,
+        //     onPressed: (pressedContext) async {
+        //       debugPrint("refreshed pressed");
+        //       UserDataController userData = Provider.of<UserDataController>(context, listen: false);
+        //       userData.populateFeed(); // I think this should refresh :shrugging_man:
+        //     }),
         PersistentBottomNavBarItem(
             icon: const Icon(CupertinoIcons.add),
             title: ("Post"),
@@ -81,18 +81,18 @@ class _HomePageState extends State<HomePage> {
 
               Provider.of<NavigationController>(context, listen: false).changeScreen('/home/post_camera');
             }),
-        PersistentBottomNavBarItem(
-            icon: const Icon(CupertinoIcons.delete),
-            title: ("Reset"),
-            activeColorPrimary: CupertinoColors.white,
-            inactiveColorPrimary: CupertinoColors.systemGrey,
-            onPressed: (pressedContext) async {
-              debugPrint("resetting cache");
-              Hive.box("cache").clear().then((value) => debugPrint("Cache reset"));
+        // PersistentBottomNavBarItem(
+        //     icon: const Icon(CupertinoIcons.delete),
+        //     title: ("Reset"),
+        //     activeColorPrimary: CupertinoColors.white,
+        //     inactiveColorPrimary: CupertinoColors.systemGrey,
+        //     onPressed: (pressedContext) async {
+        //       debugPrint("resetting cache");
+        //       Hive.box("cache").clear().then((value) => debugPrint("Cache reset"));
 
-              // String newMnemonic = await ConfigBox.regenerateMnemonic();
-              // debugPrint("Resetting Mnemonic $newMnemonic");
-            }),
+        //       // String newMnemonic = await ConfigBox.regenerateMnemonic();
+        //       // debugPrint("Resetting Mnemonic $newMnemonic");
+        //     }),
         PersistentBottomNavBarItem(
           icon: const Icon(CupertinoIcons.person),
           title: ("Profile"),
