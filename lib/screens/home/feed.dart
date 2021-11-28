@@ -31,8 +31,14 @@ class _FeedPageState extends State<FeedPage> {
     UserDataController controller = Provider.of<UserDataController>(context);
     feed = controller.feed;
     if (feed.timelineOfPosts.isEmpty) {
-      return Scaffold(
-        body: Center(child: Text("No posts found yet...")),
+      return RefreshIndicator(
+        // child: ListView(cacheExtent: 100000, children: feed.timelineOfPosts.map((e) => PostWidget(e)).toList()),
+        child: ListView(
+          children: [Center(child: Text("No posts found yet..."))],
+        ),
+        onRefresh: () async {
+          controller.populateFeed();
+        },
       );
     } else {
       return RefreshIndicator(
