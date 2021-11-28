@@ -29,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    PersistentTabController _controller = PersistentTabController(initialIndex: 0);
+    PersistentTabController _controller = PersistentTabController(initialIndex: 2);
     return PersistentTabView(
       context,
       controller: _controller,

@@ -7,6 +7,7 @@ import 'package:dapproh/screens/home/post_confirmation.dart';
 import 'package:dapproh/screens/home/uploading_page.dart';
 import 'package:dapproh/screens/onboarding/confirm.dart';
 import 'package:dapproh/screens/onboarding/create.dart';
+import 'package:dapproh/screens/onboarding/getting_things_ready.dart';
 import 'package:dapproh/screens/onboarding/restore.dart';
 import 'package:dapproh/screens/onboarding/start.dart';
 import 'package:flutter/material.dart';
@@ -85,6 +86,9 @@ List<Page> getPages(context) {
         break;
       case 'following':
         pages.add(const MaterialPage(child: FollowingPage()));
+        break;
+      case 'gettingThingsReady':
+        pages.add(const MaterialPage(child: GettingThingsReady()));
         break;
       case '':
         break;

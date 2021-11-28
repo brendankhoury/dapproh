@@ -30,30 +30,44 @@ class ConfigBox {
   static final SkynetClient client = SkynetClient();
   static final CryptKey keyGen = CryptKey();
 
-  static String getMnemonic() => configBox.get("mnemonic");
+  static String getMnemonic() {
+    if (!configBox.containsKey("mnemonic")) return regenerateMnemonic();
+    return configBox.get("mnemonic");
+  }
+
   static Uint8List getMnemonicSeed() => mnemonicToSeed(getMnemonic());
   static void setMnemonic(String mnemonic) => configBox.put("mnemonic", mnemonic);
 
-  static Future<String> regenerateMnemonic() async {
+  static String regenerateMnemonic() {
     String newMnemonic = generateMnemonic();
     setMnemonic(newMnemonic);
+    return newMnemonic;
+  }
+
+  static Future<bool> setUsers() async {
     String userId = (await getOwnedSkynetUser()).id;
     setUserId(userId);
     String publicFeedKey = keyGen.genFortuna();
     setPrivateUser(PrivateUser({}, [], publicFeedKey), setSkynet: true);
     // setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
-    setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true).then((value) {
+    return await setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true).then((value) {
       if (value) {
         // In this case, the friendCode is simply set
-        resetFriendCode().then((value) {
+        return resetFriendCode().then((value) {
           if (!value) {
             debugPrint("No Friend code set for new user!!!");
+            return false;
+          } else {
+            return true;
           }
         });
       }
+      return false;
     });
+  }
 
-    return newMnemonic;
+  static bool isAppInitialized() {
+    return configBox.containsKey("privateUser");
   }
 
   static PrivateUser getPrivateUser() {
@@ -299,7 +313,7 @@ class ConfigBox {
 
   static String getUserName() {
     if (!configBox.containsKey("name")) {
-      setUserName("Unknown Name");
+      setUserName("Set name here");
     }
     return configBox.get("name");
   }

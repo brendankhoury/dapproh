@@ -1,4 +1,5 @@
 import 'package:dapproh/controllers/navigation.dart';
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,8 +18,8 @@ class ConfirmSignupPage extends StatelessWidget {
               const Text('I have backed up my mnemonic and understand that if the mnemonic gets lost I will loose access to the account.'
                   '\nIf someone else gains access to the mnemonic, they will have full access to the account.'),
               TextButton(
-                  onPressed: () {
-                    Provider.of<NavigationController>(context, listen: false).changeScreen('/home');
+                  onPressed: () async {
+                    Provider.of<NavigationController>(context, listen: false).changeScreen('/gettingThingsReady');
                     debugPrint("Still need to implement the confirmed portion of the hive box");
                   },
                   child: const Text("Confirm")),

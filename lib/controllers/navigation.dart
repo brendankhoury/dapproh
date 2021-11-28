@@ -1,7 +1,8 @@
+import 'package:dapproh/schemas/config_box.dart';
 import 'package:flutter/material.dart';
 
 class NavigationController extends ChangeNotifier {
-  String screenName = '/home'; //'/start';
+  String screenName = ConfigBox.isAppInitialized() ? '/home' : '/start'; //'/start';
   String imagePath = '';
   String postDescription = '';
 

@@ -15,28 +15,37 @@ class MnemonicDisplay extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Expanded(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: box
                             .get("mnemonic")
                             .split(" ")
                             .sublist(0, 6)
-                            .map<Widget>((e) => Text(
+                            .map<Widget>((
+                              e,
+                            ) =>
+                                Text(
                                   e,
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 1.3,
                                 ))
                             .toList(),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                      )),
+                      Expanded(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: box
                             .get("mnemonic")
                             .split(" ")
                             .sublist(6)
                             .map<Widget>((e) => Text(
                                   e,
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 1.3,
                                 ))
                             .toList(),
-                      ),
+                      )),
                     ],
                   ),
                   margin: const EdgeInsets.symmetric(horizontal: 20)));

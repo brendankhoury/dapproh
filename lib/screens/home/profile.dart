@@ -153,6 +153,14 @@ class ProfilePage extends StatelessWidget {
               // Column(
               //   children: ConfigBox.getPrivateUser().following.values.map((e) => Text(e.userId)).toList(),
               // ),
+              ElevatedButton(
+                onPressed: () {
+                  ConfigBox.cacheBox.clear();
+                  ConfigBox.configBox.clear();
+                },
+                child: Text("Wipe data"),
+                style: ElevatedButton.styleFrom(primary: Colors.red),
+              ),
               Expanded(
                   child: GridView.count(
                       crossAxisCount: 3,
