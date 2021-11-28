@@ -5,6 +5,8 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart';
+import 'package:cryptography/cryptography.dart';
+import 'package:dapproh/controllers/user_data.dart';
 import 'package:dapproh/models/skynet_schema.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +40,7 @@ class ConfigBox {
     String userId = (await getOwnedSkynetUser()).id;
     setUserId(userId);
     String publicFeedKey = keyGen.genFortuna();
-    setPrivateUser(PrivateUser({}, [], publicFeedKey));
+    setPrivateUser(PrivateUser({}, [], publicFeedKey), setSkynet: true);
     // setPrivateUser(PrivateUser({userId: FollowedUser(publicFeedKey, userId)}, [], publicFeedKey));
     setOwnedFeed(PublicFeed([], getUserName()), setSkynet: true).then((value) {
       if (value) {
@@ -62,10 +64,32 @@ class ConfigBox {
     return PrivateUser.fromJson(jsonDecode(privateUserData));
   }
 
-  static void setPrivateUser(PrivateUser user) async {
+  static Future<String> mnemonicToKey(String mnemonic) async {
+    final pdfk2 = Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 1000, bits: 256);
+    final secretKey = await pdfk2.deriveKey(secretKey: SecretKey(mnemonic.codeUnits), nonce: []);
+    final secretKeyData = await secretKey.extract();
+    final stringKey = base64Encode(secretKeyData.bytes);
+    return stringKey;
+  }
+
+  static void setPrivateUser(PrivateUser user, {required bool setSkynet}) async {
     debugPrint("SettingPrivateUser: ${jsonEncode(user.toJson())}");
     configBox.put("privateUser", jsonEncode(user.toJson()));
     // TODO: UPLOAD TO SKYNET;
+    if (setSkynet) {
+      String newIv = keyGen.genDart();
+
+      String privateFeedContent = jsonEncode(user.toJson());
+
+      AesCrypt encryption = AesCrypt(padding: PaddingAES.pkcs7, key: await mnemonicToKey(getMnemonic()));
+
+      String encryptedPrivateFeedContent = encryption.gcm.encrypt(inp: privateFeedContent, iv: newIv);
+      String ivAndContent = newIv + ' ' + encryptedPrivateFeedContent;
+
+      bool wasSkynetSetSuccessfull = await client.skydb.setFile(await getOwnedSkynetUser(), UserDataController.PRIVATE_USER_FEED_KEY,
+          SkyFile(content: Uint8List.fromList(utf8.encode(ivAndContent)), filename: "privateFeed.txt", type: "text/plain"));
+      debugPrint("Successfull private feed update: $wasSkynetSetSuccessfull");
+    }
   }
 
   static Future<SkynetUser> getOwnedSkynetUser() async {
@@ -129,7 +153,7 @@ class ConfigBox {
         getFeedFromUser(newUser); // Verifies the autenthicity of the file, will throw an error otherwise
         final privateUser = getPrivateUser();
         privateUser.addUser(newUser);
-        setPrivateUser(privateUser);
+        setPrivateUser(privateUser, setSkynet: true);
         return true;
       } catch (e) {
         debugPrint("Failure Adding user: $e");
@@ -198,6 +222,9 @@ class ConfigBox {
       final Post newPost = Post(DateTime.now(), description, "https://dweb.link/ipfs/$uploadCID", encryptionKey, encryptionIv);
       final PublicFeed ownedFeed = getOwnedFeed();
       ownedFeed.addPost(newPost);
+      final PrivateUser privateUser = getPrivateUser();
+      privateUser.addPost(newPost);
+      setPrivateUser(privateUser, setSkynet: true);
       final bool skynetSet = await setOwnedFeed(ownedFeed, setSkynet: true);
       debugPrint("Skynet Set with new post: $skynetSet");
       return skynetSet;

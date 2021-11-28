@@ -11,6 +11,7 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({Key? key}) : super(key: key);
@@ -70,6 +71,7 @@ class ProfilePage extends StatelessWidget {
                       controller: userNameController,
                       onSubmitted: (String data) {
                         // update profile data
+                        debugPrint("Changing userName to $data");
                         PublicFeed ownedFeed = ConfigBox.getOwnedFeed();
                         ownedFeed.name = data;
                         ConfigBox.setOwnedFeed(ownedFeed, setSkynet: true);
@@ -103,7 +105,8 @@ class ProfilePage extends StatelessWidget {
                       style: OutlinedButton.styleFrom(primary: CupertinoColors.white)),
                   OutlinedButton(
                       onPressed: () {
-                        debugPrint("Share friend code not yet implemented");
+                        // debugPrint("Share friend code not yet implemented");
+                        Share.share(ConfigBox.getFriendCode());
                       },
                       child: const Icon(CupertinoIcons.share),
                       style: OutlinedButton.styleFrom(primary: CupertinoColors.white))
