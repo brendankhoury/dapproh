@@ -1,8 +1,6 @@
 # Dapproh: Private and Decentralized
 [Demo Video](https://www.youtube.com/watch?v=BwFWRX57_tE)
 
-[Hackathon Submission](https://devpost.com/software/dapproh)
-
 ## About
 
 Dapproh is an encrypted completely decentralized social network built on IPFS, Filecoin, and SkynetDB. Dapproh functions as a mobile app built for iOS and Android.
